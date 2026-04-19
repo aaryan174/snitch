@@ -20,11 +20,6 @@ const userSchema = new mongoose.Schema(
       required: [true, "Password is required"],
       minlength: 6,
     },
-    isSeller:{
-      type: Boolean,
-      required:true,
-      default: false
-    }
   },
   {
     timestamps: true,

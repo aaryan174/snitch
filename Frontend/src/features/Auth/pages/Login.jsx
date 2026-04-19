@@ -1,24 +1,14 @@
 import React, { useState } from 'react';
 import Input from '../../../components/ui/Input';
 import Button from '../../../components/ui/Button';
-import RadioGroup from '../../../components/ui/RadioGroup';
-import Checkbox from '../../../components/ui/Checkbox';
 import { useAuth } from "../hooks/useAuth.js";
 import { useNavigate, Link } from 'react-router-dom';
-
 
 // SVG Icons
 const MailIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <rect width="20" height="16" x="2" y="4" rx="2" />
     <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-  </svg>
-);
-
-const UserIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-    <circle cx="12" cy="7" r="4" />
   </svg>
 );
 
@@ -43,18 +33,14 @@ const AppleIcon = () => (
   </svg>
 );
 
-const Register = () => {
+const Login = () => {
 
-  const { handleRegister } = useAuth();
-  const Navigate =  useNavigate();
-
+  const { handleLogin } = useAuth();
+  const Navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    name: '',
     email: '',
     password: '',
-    role: 'buyer',
-    termsAccepted: false
   });
   const [error, setError] = useState(null);
 
@@ -63,24 +49,18 @@ const Register = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleRoleChange = (role) => {
-    setFormData(prev => ({ ...prev, role }));
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
     try {
-      await handleRegister({
-        name: formData.name,
+      await handleLogin({
         email: formData.email,
         password: formData.password,
-        isSeller: formData.role === 'seller',
       });
       console.log('Form Submitted:', formData);
       Navigate("/");
     } catch (err) {
-      setError(err.response?.data?.message || err.response?.data?.errors?.[0]?.message || 'Registration failed. Please try again.');
+      setError(err.response?.data?.message || err.response?.data?.errors?.[0]?.message || 'Login failed. Please check your credentials.');
     }
   };
 
@@ -102,8 +82,8 @@ const Register = () => {
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent pointer-events-none" />
 
           <div className="relative z-20 max-w-md">
-            <h2 className="text-4xl font-bold tracking-tight mb-3 text-white">Elevate Your<br />Esthetic.</h2>
-            <p className="text-gray-300 text-sm leading-relaxed drop-shadow-md">Join the premium streetwear community. Get access to exclusive drops, personalized recommendations, and seamless checkout.</p>
+            <h2 className="text-4xl font-bold tracking-tight mb-3 text-white">Welcome<br />Back.</h2>
+            <p className="text-gray-300 text-sm leading-relaxed drop-shadow-md">Sign in to access your exclusive drops, personalized recommendations, and seamless checkout.</p>
           </div>
         </div>
 
@@ -115,48 +95,22 @@ const Register = () => {
 
           <div className="max-w-md w-full mx-auto relative z-10">
             <div className="mb-10 text-center lg:text-left">
-              <h1 className="text-3xl font-bold tracking-tight mb-2">Create an account</h1>
-              <p className="text-[#a1a1a1] text-sm">Enter your details to get started.</p>
+              <h1 className="text-3xl font-bold tracking-tight mb-2">Welcome Back</h1>
+              <p className="text-[#a1a1a1] text-sm">Enter your credentials to access your account.</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
 
               {/* Error Alert */}
               {error && (
-                <div className="bg-red-500/10 border border-red-500/50 text-red-500 text-sm p-3 rounded-lg flex items-center gap-2 mb-4">
+                <div className="bg-red-500/10 border border-red-500/50 text-red-500 text-sm p-3 rounded-lg flex items-center gap-2">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                   {error}
                 </div>
               )}
 
-              {/* Radio Selection for Buyer/Seller */}
-              <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-300 tracking-wide block mb-1">
-                  I want to
-                </label>
-                <RadioGroup
-                  name="role"
-                  options={[
-                    { label: 'Shop (Buyer)', value: 'buyer' },
-                    { label: 'Sell (Seller)', value: 'seller' }
-                  ]}
-                  selectedValue={formData.role}
-                  onChange={handleRoleChange}
-                />
-              </div>
-
               {/* Form Inputs */}
               <div className="space-y-4">
-                <Input
-                  label="Full Name"
-                  name="name"
-                  placeholder="John Doe"
-                  icon={UserIcon}
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                />
-
                 <Input
                   label="Email Address"
                   name="email"
@@ -180,24 +134,16 @@ const Register = () => {
                 />
               </div>
 
-              {/* Terms Checkbox */}
-              <div className="py-2">
-                <Checkbox
-                  id="terms"
-                  label={
-                    <span>
-                      I agree to the <a href="#" className="text-white hover:underline underline-offset-2">Terms of Service</a> & <a href="#" className="text-white hover:underline underline-offset-2">Privacy Policy</a>
-                    </span>
-                  }
-                  checked={formData.termsAccepted}
-                  onChange={(e) => setFormData(prev => ({ ...prev, termsAccepted: e.target.checked }))}
-                  required
-                />
+              {/* Forgot Password Link */}
+              <div className="flex justify-end">
+                <a href="#" className="text-sm text-[#a1a1a1] hover:text-white transition-colors">
+                  Forgot password?
+                </a>
               </div>
 
               {/* Submit Button */}
               <Button type="submit" variant="primary">
-                Create Account
+                Sign In
               </Button>
             </form>
 
@@ -223,11 +169,11 @@ const Register = () => {
               </Button>
             </div>
 
-            {/* Login Link */}
+            {/* Register Link */}
             <div className="mt-8 text-center text-sm text-[#a1a1a1]">
-              Already have an account?{' '}
-              <Link to="/login" className="text-white font-medium hover:text-gray-300 transition-colors hover:underline underline-offset-4">
-                Log in
+              Don't have an account?{' '}
+              <Link to="/register" className="text-white font-medium hover:text-gray-300 transition-colors hover:underline underline-offset-4">
+                Sign up
               </Link>
             </div>
           </div>
@@ -237,4 +183,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Login;

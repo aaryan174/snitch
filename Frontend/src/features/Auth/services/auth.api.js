@@ -6,13 +6,13 @@ const Authapi = axios.create({
 })
 
 
-export async function register({email, name, password}) {
-    const res = await Authapi.post("/api/auth/register", {email, password, name})
+export async function register({email, name, password, isSeller}) {
+    const res = await Authapi.post("/api/auth/register", {email, password, name, isSeller})
     return res.data;
 }
 
 export async function login({email, password}) {
-    const res = await Authapi.post("/auth/api/login", {email, password})
+    const res = await Authapi.post("/api/auth/login", {email, password})
     return res.data
 }
 
