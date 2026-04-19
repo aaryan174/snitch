@@ -9,7 +9,7 @@ const cookieOptions = {
 
 export const registerUser = async (req, res, next) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, isSeller} = req.body;
 
     const existingUser = await User.findOne({ email });
 
@@ -24,6 +24,7 @@ export const registerUser = async (req, res, next) => {
       name,
       email,
       password,
+      role: isSeller ? "seller" : "buyer"
     });
 
     const token = generateToken(user._id);

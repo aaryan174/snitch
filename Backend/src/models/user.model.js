@@ -20,6 +20,11 @@ const userSchema = new mongoose.Schema(
       required: [true, "Password is required"],
       minlength: 6,
     },
+    isSeller:{
+      type: Boolean,
+      required:true,
+      default: false
+    }
   },
   {
     timestamps: true,
@@ -39,6 +44,6 @@ userSchema.methods.comparePassword = async function comparePassword(password) {
   return bcrypt.compare(password, this.password);
 };
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model("UserSnitch", userSchema);
 
 export default User;
