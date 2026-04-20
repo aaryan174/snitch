@@ -161,7 +161,7 @@ const Login = () => {
             <div className="flex gap-4">
               <Button type="button" variant="social">
                 <GoogleIcon />
-                Google
+                <a href="/api/auth/google">Google</a>
               </Button>
               <Button type="button" variant="social">
                 <AppleIcon />

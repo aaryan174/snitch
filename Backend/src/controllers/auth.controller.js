@@ -102,3 +102,8 @@ export const getUserProfile = async (req, res) => {
     user: req.user,
   });
 };
+
+export const googleCallback = async (req, res) => {
+  console.log(req.user)
+  res.redirect("http://localhost:5173/");
+}

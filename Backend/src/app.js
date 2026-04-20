@@ -1,5 +1,7 @@
 import express from "express";
 import cookieParser from "cookie-parser";
+import passport from "passport";
+import {Strategy as GoogleStrategy } from "passport-google-oauth20"
 import cors from "cors";
 import authRoutes from "./routes/auth.routes.js";
 import { notFound, errorHandler } from "./middlewares/error.middleware.js";
@@ -13,6 +15,23 @@ app.use(cors({
   origin: "http://localhost:5173",
   credentials: true
 }))
+
+
+
+//oauth middleware
+app.use(passport.initialize());
+
+passport.use( new GoogleStrategy({
+  clientID: process.env.GOOGLE_CLIENT_ID,
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  callbackURL: "/api/auth/google/callback"
+},
+(accessToken, refreshToken, profile, done)=>{
+  return done(null, profile);
+}))
+
+
+
 
 app.get("/", (req, res) => {
   res.status(200).json({

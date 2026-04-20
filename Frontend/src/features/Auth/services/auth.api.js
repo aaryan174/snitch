@@ -1,22 +1,22 @@
 import axios from "axios"
 
 const Authapi = axios.create({
-    baseURL: "http://localhost:5000",
+    baseURL: "/api/auth",
     withCredentials: true
 })
 
 
 export async function register({email, name, password, isSeller}) {
-    const res = await Authapi.post("/api/auth/register", {email, password, name, isSeller})
+    const res = await Authapi.post("/register", {email, password, name, isSeller})
     return res.data;
 }
 
 export async function login({email, password}) {
-    const res = await Authapi.post("/api/auth/login", {email, password})
+    const res = await Authapi.post("/login", {email, password})
     return res.data
 }
 
 export async function getUserProfile() {
-    const res = await Authapi.get("/api/auth/profile")
+    const res = await Authapi.get("/profile")
     return res.data
 }
