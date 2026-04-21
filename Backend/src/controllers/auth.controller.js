@@ -104,6 +104,32 @@ export const getUserProfile = async (req, res) => {
 };
 
 export const googleCallback = async (req, res) => {
-  console.log(req.user)
-  res.redirect("http://localhost:5173/");
+  const {id, emails, displayName, photos } = req.user;
+  const email = emails[0].value;
+  const photo = photos[0].value;
+
+  try {
+    let user = await User.findOne({email})
+
+    if(!user){
+      user = await User.create({
+        email,
+        googleId: id,
+        name: displayName
+      })
+    }
+
+    const token = generateToken(user._id);
+
+    res.cookie("token", token, cookieOptions);
+
+    res.redirect("http://localhost:5173/");
+
+  } catch (error) {
+    console.log(error.message)
+  }
+
+
+ 
+
 }
