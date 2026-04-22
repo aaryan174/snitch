@@ -1,3 +1,4 @@
+import productModel from "../models/product.model.js";
 import User from "../models/user.model.js";
 import { generateToken } from "../utils/token.util.js";
 
@@ -132,3 +133,4 @@ export const googleCallback = async (req, res) => {
  
 
 }
+

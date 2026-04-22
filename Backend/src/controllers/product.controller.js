@@ -41,3 +41,33 @@ export async function createProductController(req, res) {
         })
     }
 }
+
+
+export const getSellerData = async (req, res) => {
+    const seller = req.user;
+  try {
+
+    if(!seller){
+      return res.status(403).json({
+        message: "Unauthorized",
+        success: false,
+        err: "Unauthorized"
+      })
+    }
+
+    const products = await productModel.find({seller: seller._id});
+    res.status(200).json({
+      message: "product fetched successfully",
+      success: true,
+      products
+    })
+
+  } catch (error) {
+    console.log("sellerData Error", error.message);
+    return res.status(500).json({
+      message:"Server error",
+      success: false,
+      err: "server error"
+    })
+  }
+}
