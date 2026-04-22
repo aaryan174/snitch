@@ -4,6 +4,7 @@ import passport from "passport";
 import {Strategy as GoogleStrategy } from "passport-google-oauth20"
 import cors from "cors";
 import authRoutes from "./routes/auth.routes.js";
+import productRouter from "./routes/product.routes.js";
 import { notFound, errorHandler } from "./middlewares/error.middleware.js";
 
 const app = express();
@@ -41,6 +42,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/seller", productRouter);
 
 app.use(notFound);
 app.use(errorHandler);
