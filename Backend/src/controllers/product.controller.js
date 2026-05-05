@@ -3,52 +3,52 @@ import { uploadImage } from "../Services/storage.service.js";
 
 
 export async function createProductController(req, res) {
-   
-    try {
-         const {title, description, image, prizeAmount, prizeCurrency} = req.body;
-        const seller  = req.user;
 
-        const uploadedImages = await Promise.all(req.files.map(async (file)=>{
-            const result = await uploadImage({
-                buffer: file.buffer,
-                fileName: file.originalname
-            })
-            return result;
-        }));
+  try {
+    const { title, description, image, prizeAmount, prizeCurrency } = req.body;
+    const seller = req.user;
 
-        const product = await productModel.create({
-            title,
-            description,
-            prize:{
-                amount: prizeAmount,
-                currency: prizeCurrency || "INR"
-            },
-            image: uploadedImages.map(img => ({ url: img.url })),
-            seller: seller._id
-        });
+    const uploadedImages = await Promise.all(req.files.map(async (file) => {
+      const result = await uploadImage({
+        buffer: file.buffer,
+        fileName: file.originalname
+      })
+      return result;
+    }));
 
-        res.status(201).json({
-            message: "product created successfully",
-            success: true,
-            product
-        });
+    const product = await productModel.create({
+      title,
+      description,
+      prize: {
+        amount: prizeAmount,
+        currency: prizeCurrency || "INR"
+      },
+      image: uploadedImages.map(img => ({ url: img.url })),
+      seller: seller._id
+    });
 
-    } catch (error) {
-        console.log(" Product error", error.message);
-       return res.status(500).json({
-            message: "Server error",
-            err: "Server error",
-            success: false
-        })
-    }
+    res.status(201).json({
+      message: "product created successfully",
+      success: true,
+      product
+    });
+
+  } catch (error) {
+    console.log(" Product error", error.message);
+    return res.status(500).json({
+      message: "Server error",
+      err: "Server error",
+      success: false
+    })
+  }
 }
 
 
 export const getSellerData = async (req, res) => {
-    const seller = req.user;
+  const seller = req.user;
   try {
 
-    if(!seller){
+    if (!seller) {
       return res.status(403).json({
         message: "Unauthorized",
         success: false,
@@ -56,7 +56,7 @@ export const getSellerData = async (req, res) => {
       })
     }
 
-    const products = await productModel.find({seller: seller._id});
+    const products = await productModel.find({ seller: seller._id });
     res.status(200).json({
       message: "product fetched successfully",
       success: true,
@@ -66,7 +66,7 @@ export const getSellerData = async (req, res) => {
   } catch (error) {
     console.log("sellerData Error", error.message);
     return res.status(500).json({
-      message:"Server error",
+      message: "Server error",
       success: false,
       err: "server error"
     })
@@ -77,8 +77,41 @@ export const getProductUserData = async (req, res) => {
   const products = await productModel.find()
 
   return res.status(200).json({
-    message:"Products fetched successfully",
+    message: "Products fetched successfully",
     success: true,
     products
   })
+}
+
+export const getOneProductDetail = async (req, res) => {
+  try {
+    const { productId } = req.params;
+
+    if (!productId) {
+      return res.status(400).json({
+        message: "ProductId not found",
+        success: false
+      });
+    }
+    const Product = await productModel.findById(productId).lean();
+
+    if (!Product) {
+      return res.status(400).json({
+        message: "Product not found",
+        success: false
+      });
+    }
+
+    res.status(200).json({
+      message: "Product data fetched successfully",
+      success: true,
+      Product
+    });
+  } catch (error) {
+    console.log("Server Error", error.message);
+    return res.status(500).json({
+      message: "Server Error",
+      success: false
+    });
+  }
 }

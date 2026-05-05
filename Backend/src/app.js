@@ -6,6 +6,7 @@ import cors from "cors";
 import authRoutes from "./routes/auth.routes.js";
 import productRouter from "./routes/product.routes.js";
 import { notFound, errorHandler } from "./middlewares/error.middleware.js";
+import UserRouter from "./routes/User.routes.js";
 
 const app = express();
 
@@ -43,6 +44,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRouter);
+app.use("/api/user", UserRouter);
 
 app.use(notFound);
 app.use(errorHandler);
