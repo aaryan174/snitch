@@ -5,11 +5,12 @@ import CreateProduct from "../features/product/pages/CreateProduct.jsx"
 import Protected from "../components/protected/Protected.jsx"
 import DashBoard from "../features/product/pages/DashBoard.jsx"
 import SellerLayout from "../components/layout/SellerLayout.jsx"
+import Home from "../features/product/pages/Home.jsx"
 
 export const routes = createBrowserRouter([
     {
         path: "/",
-        element: <h1>home</h1>
+        element: <Home />
     },
     {
         path: "/register",
