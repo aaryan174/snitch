@@ -9,10 +9,11 @@ export async function createProductController(req, res) {
         const seller  = req.user;
 
         const uploadedImages = await Promise.all(req.files.map(async (file)=>{
-            return await uploadImage({
+            const result = await uploadImage({
                 buffer: file.buffer,
                 fileName: file.originalname
             })
+            return result;
         }));
 
         const product = await productModel.create({

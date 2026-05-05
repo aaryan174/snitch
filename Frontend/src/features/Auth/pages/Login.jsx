@@ -39,7 +39,7 @@ const AppleIcon = () => (
 const Login = () => {
 
   const { handleLogin } = useAuth();
-  const Navigate = useNavigate();
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     email: '',
@@ -56,12 +56,17 @@ const Login = () => {
     e.preventDefault();
     setError(null);
     try {
-      await handleLogin({
+    const user = await handleLogin({
         email: formData.email,
         password: formData.password,
       });
+      if(user.role === "buyer"){
+        navigate("/");
+      } else if(user.role === "seller") {
+        navigate("/product/Dashboard")
+      }
       console.log('Form Submitted:', formData);
-      Navigate("/");
+      
     } catch (err) {
       setError(err.response?.data?.message || err.response?.data?.errors?.[0]?.message || 'Login failed. Please check your credentials.');
     }

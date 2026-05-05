@@ -4,7 +4,7 @@ import ImageKit from '@imagekit/nodejs';
 const client = new ImageKit({
   privateKey: process.env.IMAGE_KIT_PRIVATE,
   publicKey: process.env.IMAGE_KIT_PUBLIC,
-  
+  urlEndpoint: process.env.IMAGE_KIT_URL,
 });
 
 

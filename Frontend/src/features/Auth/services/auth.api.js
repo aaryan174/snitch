@@ -13,10 +13,10 @@ export async function register({email, name, password, isSeller}) {
 
 export async function login({email, password}) {
     const res = await Authapi.post("/login", {email, password})
-    return res.data
+    return res.data;
 }
 
 export async function getUserProfile() {
     const res = await Authapi.get("/profile")
-    return res.data
+    return res.data;
 }

@@ -49,7 +49,7 @@ const AppleIcon = () => (
 const Register = () => {
 
   const { handleRegister } = useAuth();
-  const Navigate =  useNavigate();
+  const navigate =  useNavigate();
 
 
   const [formData, setFormData] = useState({
@@ -74,14 +74,18 @@ const Register = () => {
     e.preventDefault();
     setError(null);
     try {
-      await handleRegister({
+      const user = await handleRegister({
         name: formData.name,
         email: formData.email,
         password: formData.password,
         isSeller: formData.role === 'seller',
       });
       console.log('Form Submitted:', formData);
-      Navigate("/");
+      if (user.role === 'seller') {
+        navigate('/product/Dashboard');
+      } else {
+        navigate('/');
+      }
     } catch (err) {
       setError(err.response?.data?.message || err.response?.data?.errors?.[0]?.message || 'Registration failed. Please try again.');
     }
