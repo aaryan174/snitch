@@ -6,6 +6,7 @@ import Protected from "../components/protected/Protected.jsx"
 import DashBoard from "../features/product/pages/DashBoard.jsx"
 import SellerLayout from "../components/layout/SellerLayout.jsx"
 import Home from "../features/product/pages/Home.jsx"
+import OneProduct from "../features/User/Pages/OneProduct.jsx"
 
 export const routes = createBrowserRouter([
     {
@@ -33,5 +34,9 @@ export const routes = createBrowserRouter([
                 element: <DashBoard />
             }
         ]
+    },
+    {
+        path: "/Product/:productId",
+        element: <OneProduct />
     }
 ])

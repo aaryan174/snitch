@@ -20,3 +20,4 @@ export async function getProductData() {
     const res = await productApiInstance.get("/");
     return res.data;
 }
+

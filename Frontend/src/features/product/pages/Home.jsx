@@ -67,7 +67,8 @@ const ProductCard = ({ product, index }) => {
   const imageUrl = product?.image?.[0]?.url || ''
 
   return (
-    <div
+    <Link
+      to={`/Product/${product._id}`}
       className="group relative flex flex-col cursor-pointer"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -146,7 +147,7 @@ const ProductCard = ({ product, index }) => {
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   )
 }
 
