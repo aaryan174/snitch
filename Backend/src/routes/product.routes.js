@@ -3,7 +3,7 @@ import { sellerCheckMiddleware } from "../middlewares/seller.middleware.js";
 import validate from "../middlewares/validate.middleware.js";
 import { createProductValidator } from "../validators/product.validate.js";
 import multer from 'multer'
-import { createProductController, getSellerData } from "../controllers/product.controller.js";
+import { createProductController, getProductUserData, getSellerData } from "../controllers/product.controller.js";
 
 
 
@@ -19,6 +19,8 @@ const upload = multer({
 productRouter.post("/create", sellerCheckMiddleware, upload.array("image", 7), createProductValidator, validate, createProductController);
 
 productRouter.get("/seller", sellerCheckMiddleware, getSellerData);
+
+productRouter.get("/", getProductUserData);
 
 
 
