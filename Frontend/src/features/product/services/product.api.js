@@ -21,3 +21,7 @@ export async function getProductData() {
     return res.data;
 }
 
+export async function createVariant(productId, formData) {
+    const res = await productApiInstance.post(`/${productId}/variants`, formData);
+    return res.data;
+}

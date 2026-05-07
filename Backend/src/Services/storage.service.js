@@ -10,7 +10,7 @@ const client = new ImageKit({
 
 export async function uploadImage({buffer, fileName, folder="sntich"}) {
     const result = await client.files.upload({
-        file: await ImageKit.toFile(buffer),
+        file: buffer.toString('base64'),
         fileName,
         folder
     })

@@ -30,6 +30,18 @@ const CheckIcon = () => (
   </svg>
 )
 
+const ChevronLeftIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="m15 18-6-6 6-6"/>
+  </svg>
+)
+
+const ChevronRightIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="m9 18 6-6-6-6"/>
+  </svg>
+)
+
 const CURRENCY_SYMBOLS = { USD: '$', EUR: '€', GBP: '£', JPY: '¥', INR: '₹' }
 
 const OneProduct = () => {
@@ -40,6 +52,7 @@ const OneProduct = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [mainImage, setMainImage] = useState(0)
+  const [selectedVariant, setSelectedVariant] = useState(null)
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -54,6 +67,10 @@ const OneProduct = () => {
     }
     if (productId) fetchProduct()
   }, [productId])
+
+  useEffect(() => {
+    setMainImage(0)
+  }, [product, selectedVariant])
 
   if (loading) {
     return (
@@ -78,6 +95,27 @@ const OneProduct = () => {
   }
 
   const currencySymbol = CURRENCY_SYMBOLS[product?.prize?.currency] || '₹'
+  const displayPrice = selectedVariant?.price?.amount || product?.prize?.amount
+  const displayImages = (selectedVariant?.images?.length > 0) ? selectedVariant.images : product?.image
+  const variants = product?.variants || []
+
+  // Group attributes for cleaner display if we wanted to, 
+  // but for now let's just show variants as selectable tiles
+  const handleSelectVariant = (variant) => {
+    setSelectedVariant(prev => prev === variant ? null : variant)
+  }
+
+  const handlePrevImage = () => {
+    if (displayImages?.length > 1) {
+      setMainImage(prev => (prev === 0 ? displayImages.length - 1 : prev - 1))
+    }
+  }
+
+  const handleNextImage = () => {
+    if (displayImages?.length > 1) {
+      setMainImage(prev => (prev === displayImages.length - 1 ? 0 : prev + 1))
+    }
+  }
 
   return (
     <div className="min-h-screen bg-[#000000] text-white font-sans selection:bg-yellow-400 selection:text-black">
@@ -106,14 +144,26 @@ const OneProduct = () => {
           {/* Left: Images */}
           <div className="w-full lg:w-1/2 flex flex-col gap-4">
             {/* Main Image */}
-            <div className="aspect-[3/4] lg:aspect-[4/5] bg-[#0E0E0E] rounded-2xl overflow-hidden relative">
+            <div className="aspect-[3/4] lg:aspect-[4/5] bg-[#0E0E0E] rounded-2xl overflow-hidden relative group border border-[#1a1a1a]">
               <div className="absolute inset-0 bg-gradient-to-tr from-[#EAB308]/[0.05] via-transparent to-transparent pointer-events-none z-10" />
-              {product?.image?.[mainImage]?.url ? (
-                <img 
-                  src={product.image[mainImage].url} 
-                  alt={product.title} 
-                  className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
-                />
+              {displayImages?.[mainImage]?.url ? (
+                <>
+                  <img 
+                    src={displayImages[mainImage].url} 
+                    alt={product.title} 
+                    className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                  />
+                  {displayImages.length > 1 && (
+                    <>
+                      <button onClick={handlePrevImage} className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-20 backdrop-blur-md border border-white/10">
+                        <ChevronLeftIcon />
+                      </button>
+                      <button onClick={handleNextImage} className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-20 backdrop-blur-md border border-white/10">
+                        <ChevronRightIcon />
+                      </button>
+                    </>
+                  )}
+                </>
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-[#111]">
                   <span className="text-[#444] text-xs tracking-widest uppercase">No Image</span>
@@ -122,9 +172,9 @@ const OneProduct = () => {
             </div>
             
             {/* Thumbnails */}
-            {product?.image?.length > 1 && (
+            {displayImages?.length > 1 && (
               <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-2">
-                {product.image.map((img, idx) => (
+                {displayImages.map((img, idx) => (
                   <button 
                     key={idx}
                     onClick={() => setMainImage(idx)}
@@ -152,10 +202,10 @@ const OneProduct = () => {
               </h1>
               <div className="flex items-center gap-4 mb-6">
                 <span className="text-3xl text-white font-bold tracking-tight">
-                  {currencySymbol}{Number(product?.prize?.amount).toLocaleString()}
+                  {currencySymbol}{Number(displayPrice).toLocaleString()}
                 </span>
                 <span className="text-xs text-[#EAB308] font-semibold tracking-widest uppercase px-2 py-1 bg-[#EAB308]/10 rounded border border-[#EAB308]/20">
-                  In Stock
+                  {selectedVariant ? (selectedVariant.stock > 0 ? 'In Stock' : 'Out of Stock') : 'In Stock'}
                 </span>
               </div>
               <p className="text-[#888] text-sm leading-relaxed max-w-lg">
@@ -163,8 +213,51 @@ const OneProduct = () => {
               </p>
             </div>
 
+            {/* Variants Options */}
+            {variants.length > 0 && (
+              <div className="mb-8">
+                <h3 className="text-xs font-bold tracking-widest uppercase mb-4 text-[#888]">Available Variants</h3>
+                <div className="flex flex-wrap gap-3">
+                  {variants.map((variant, idx) => (
+                    <button
+                      key={variant._id || idx}
+                      onClick={() => handleSelectVariant(variant)}
+                      className={`flex flex-col items-start p-3 border rounded-xl transition-all duration-300 min-w-[120px] ${
+                        selectedVariant === variant 
+                        ? 'border-[#EAB308] bg-[#EAB308]/10' 
+                        : 'border-[#1a1a1a] bg-[#0e0e0e] hover:border-[#333]'
+                      }`}
+                    >
+                      {/* Thumbnail if available */}
+                      {variant.images?.[0]?.url && (
+                        <div className="w-full h-16 bg-[#111] rounded-lg mb-3 overflow-hidden">
+                          <img src={variant.images[0].url} alt="Variant" className="w-full h-full object-cover" />
+                        </div>
+                      )}
+                      {/* Attributes */}
+                      <div className="flex gap-2 flex-wrap mb-1">
+                        {variant.attributes && Object.entries(variant.attributes).map(([k, v]) => (
+                          <span key={k} className="text-[10px] font-medium text-white bg-[#1a1a1a] px-2 py-0.5 rounded">
+                            <span className="text-[#888]">{k}:</span> {v}
+                          </span>
+                        ))}
+                      </div>
+                      <span className="text-xs text-[#EAB308] font-bold mt-1">
+                        {currencySymbol}{Number(variant.price?.amount || product.prize?.amount).toLocaleString()}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+                {selectedVariant && (
+                  <button onClick={() => setSelectedVariant(null)} className="text-[10px] text-[#EAB308] hover:underline mt-3 font-semibold tracking-wider uppercase">
+                    Clear Selection
+                  </button>
+                )}
+              </div>
+            )}
+
             {/* Actions */}
-            <div className="space-y-4 mb-10 max-w-md">
+            <div className="space-y-4 mb-10 max-w-md mt-4">
               <button className="w-full bg-[#EAB308] hover:bg-[#FFD165] text-black text-xs font-bold tracking-[0.15em] uppercase py-4 rounded-xl flex items-center justify-center gap-2 transition-all duration-300 shadow-[0_0_20px_rgba(234,179,8,0.15)] hover:shadow-[0_0_30px_rgba(234,179,8,0.25)]">
                 <BagIcon />
                 ADD TO BAG

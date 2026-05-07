@@ -1,5 +1,17 @@
 import mongoose from "mongoose";
 
+const priceSchema = new mongoose.Schema({
+    amount: {
+        type: Number,
+        required: true
+    },
+    currency: {
+        type: String,
+        enum: ["USD", "EUR", "GBP", "JPY", "INR"],
+        default: "INR",
+        required: true
+    }
+}, { _id: false });
 
 const productSchema = new mongoose.Schema({
     title: {
@@ -35,6 +47,30 @@ const productSchema = new mongoose.Schema({
         ref: "UserSnitch",
         required: true
     },
+      variants: [
+        {
+            images: [
+                {
+                    url: {
+                        type: String,
+                        required: true
+                    }
+                }
+            ],
+            stock: {
+                type: Number,
+                default: 0
+            },
+            attributes: {
+                type: Map,
+                of: String
+            },
+            price: {
+                type: priceSchema,
+            }
+        },
+
+    ]
 
 }, {timestamps: true});
 

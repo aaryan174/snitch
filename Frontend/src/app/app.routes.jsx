@@ -7,6 +7,8 @@ import DashBoard from "../features/product/pages/DashBoard.jsx"
 import SellerLayout from "../components/layout/SellerLayout.jsx"
 import Home from "../features/product/pages/Home.jsx"
 import OneProduct from "../features/User/Pages/OneProduct.jsx"
+import SellerProductDetail from "../features/product/pages/SellerProductDetail.jsx"
+import CreateVariant from "../features/product/pages/CreateVariant.jsx"
 
 export const routes = createBrowserRouter([
     {
@@ -32,11 +34,21 @@ export const routes = createBrowserRouter([
             {
                 path: "Dashboard",
                 element: <DashBoard />
+            },
+            {
+                path: "detail/:productId",
+                element: <SellerProductDetail />
+            },
+            {
+                path: "detail/:productId/create-variant",
+                element: <CreateVariant />
             }
+            
         ]
     },
     {
         path: "/Product/:productId",
         element: <OneProduct />
-    }
+    },
+    
 ])

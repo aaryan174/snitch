@@ -3,7 +3,7 @@ import { sellerCheckMiddleware } from "../middlewares/seller.middleware.js";
 import validate from "../middlewares/validate.middleware.js";
 import { createProductValidator } from "../validators/product.validate.js";
 import multer from 'multer'
-import { createProductController, getProductUserData, getSellerData } from "../controllers/product.controller.js";
+import { createProductController, createVariantController, getProductUserData, getSellerData } from "../controllers/product.controller.js";
 
 
 
@@ -21,6 +21,8 @@ productRouter.post("/create", sellerCheckMiddleware, upload.array("image", 7), c
 productRouter.get("/seller", sellerCheckMiddleware, getSellerData);
 
 productRouter.get("/", getProductUserData);
+
+productRouter.post("/:productId/variants", sellerCheckMiddleware, upload.array('images', 7), createVariantController)
 
 
 

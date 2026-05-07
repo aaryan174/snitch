@@ -75,10 +75,14 @@ function timeAgo(dateString) {
 const ProductCard = ({ product }) => {
   const [imgLoaded, setImgLoaded] = useState(false);
   const [imgError, setImgError] = useState(false);
+  const navigate = useNavigate();
   const firstImage = product.image?.[0]?.url;
 
   return (
-    <div className="group bg-[#0e0e0e] border border-[#1a1a1a] rounded-xl overflow-hidden transition-all duration-300 hover:border-yellow-500/20 hover:shadow-[0_0_30px_rgba(234,179,8,0.04)] flex flex-col">
+    <div 
+      onClick={() => navigate(`/product/detail/${product._id}`)}
+      className="group bg-[#0e0e0e] border border-[#1a1a1a] rounded-xl overflow-hidden transition-all duration-300 hover:border-yellow-500/20 hover:shadow-[0_0_30px_rgba(234,179,8,0.04)] flex flex-col cursor-pointer"
+    >
       {/* Image */}
       <div className="relative aspect-[4/3] bg-[#111] overflow-hidden">
         {firstImage && !imgError ? (
