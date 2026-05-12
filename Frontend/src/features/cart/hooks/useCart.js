@@ -1,12 +1,12 @@
 import { setItems, addItem } from "../state/cart.slice.js";
 import { addItemApi, getCartApi, removeFromCartApi, updateCartItemQuantityApi } from "../service/cart.api";
 import { useDispatch } from "react-redux";
-
+import { useCallback } from "react";
 
 export const useCart = ()=>{
     const dispatch = useDispatch();
 
-    async function handleAddItem({productId, variantId}) {
+    const handleAddItem = useCallback(async ({productId, variantId}) => {
         try {
             const data = await addItemApi({productId, variantId })
             // dispatch(addItem(data.item))
@@ -15,9 +15,9 @@ export const useCart = ()=>{
             console.error(error);
             throw error;
         }
-    }
+    }, []);
 
-    async function handleGetCart() {
+    const handleGetCart = useCallback(async () => {
         try {
             const data = await getCartApi();
             if (data && data.cart) {
@@ -28,9 +28,9 @@ export const useCart = ()=>{
             console.error(error);
             return null;
         }
-    }
+    }, [dispatch]);
 
-    async function handleRemoveItem({productId, variantId}) {
+    const handleRemoveItem = useCallback(async ({productId, variantId}) => {
         try {
             const data = await removeFromCartApi({productId, variantId});
             await handleGetCart(); // refresh cart
@@ -39,9 +39,9 @@ export const useCart = ()=>{
             console.error(error);
             throw error;
         }
-    }
+    }, [handleGetCart]);
 
-    async function handleUpdateQuantity({productId, variantId, quantity}) {
+    const handleUpdateQuantity = useCallback(async ({productId, variantId, quantity}) => {
         try {
             const data = await updateCartItemQuantityApi({productId, variantId, quantity});
             await handleGetCart(); // refresh cart
@@ -50,7 +50,7 @@ export const useCart = ()=>{
             console.error(error);
             throw error;
         }
-    }
+    }, [handleGetCart]);
 
     return{
         handleAddItem,

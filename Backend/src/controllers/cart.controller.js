@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import cartModel from "../models/cart.model.js";
 import productModel from "../models/product.model.js";
 
@@ -93,17 +94,78 @@ export const getCart = async (req, res) => {
     try {
         const user = req.user;
 
-        let cart = await cartModel.findOne({ user: user._id })
-            .populate('items.product');
+        let cart = await cartModel.aggregate([
+    {
+      $match: {
+        user: new mongoose.Types.ObjectId(user._id)
+      }
+    },
+    { $unwind: { path: '$items' } },
+    {
+      $lookup: {
+        from: 'products',
+        localField: 'items.product',
+        foreignField: '_id',
+        as: 'items.product'
+      }
+    },
+    { $unwind: { path: '$items.product' } },
+    {
+      $addFields: {
+        'items.product.variants': {
+          $let: {
+            vars: {
+              matchedVariant: {
+                $filter: {
+                  input: { $ifNull: ['$items.product.variants', []] },
+                  as: 'v',
+                  cond: { $eq: ['$$v._id', '$items.variant'] }
+                }
+              }
+            },
+            in: { $arrayElemAt: ['$$matchedVariant', 0] }
+          }
+        }
+      }
+    },
+    {
+      $addFields: {
+        itemPrice: {
+          price: {
+            $multiply: [
+              '$items.quantity',
+              { $ifNull: ['$items.product.variants.price.amount', '$items.product.prize.amount'] }
+            ]
+          },
+          currency: { $ifNull: ['$items.product.variants.price.currency', '$items.product.prize.currency'] }
+        }
+      }
+    },
+    {
+      $group: {
+        _id: '$_id',
+        totalPrice: { $sum: '$itemPrice.price' },
+        currency: {
+          $first: '$itemPrice.currency'
+        },
+        items: { $push: '$items' }
+      }
+    }
+  ]);
 
-        if (!cart) {
-            cart = await cartModel.create({ user: user._id });
+        if (!cart || cart.length === 0) {
+            const newCart = await cartModel.create({ user: user._id });
+            return res.status(200).json({
+                message: "Cart fetched successfully",
+                success: true,
+                cart: newCart
+            });
         }
 
         return res.status(200).json({
             message: "Cart fetched successfully",
             success: true,
-            cart
+            cart: cart[0]
         });
     } catch (error) {
         console.error("Get Cart Error:", error);

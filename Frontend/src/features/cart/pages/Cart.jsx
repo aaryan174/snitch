@@ -111,13 +111,27 @@ const Cart = () => {
     const validItems = cartItems.filter(item => item && item.product);
 
     const totalMRP = validItems.reduce((acc, item) => {
-        const original = item.price?.original || item.price?.amount || 0;
-        return acc + (original * item.quantity);
+        const product = item.product;
+        let selectedVariant = null;
+        if (item.variant && product?.variants) {
+            selectedVariant = Array.isArray(product.variants) 
+                ? product.variants.find(v => v._id === item.variant) 
+                : product.variants;
+        }
+        const currentPriceAmount = selectedVariant?.price?.amount || product?.prize?.amount || item.price?.amount || 0;
+        return acc + (currentPriceAmount * item.quantity);
     }, 0);
 
     const subtotal = validItems.reduce((acc, item) => {
-        const amount = item.price?.amount || 0;
-        return acc + (amount * item.quantity);
+        const product = item.product;
+        let selectedVariant = null;
+        if (item.variant && product?.variants) {
+            selectedVariant = Array.isArray(product.variants) 
+                ? product.variants.find(v => v._id === item.variant) 
+                : product.variants;
+        }
+        const currentPriceAmount = selectedVariant?.price?.amount || product?.prize?.amount || item.price?.amount || 0;
+        return acc + (currentPriceAmount * item.quantity);
     }, 0);
 
     const discount = totalMRP - subtotal;
@@ -185,14 +199,17 @@ const Cart = () => {
                                 const product = item.product;
                                 let selectedVariant = null;
                                 if (item.variant && product.variants) {
-                                    selectedVariant = product.variants.find(v => v._id === item.variant);
+                                    selectedVariant = Array.isArray(product.variants) 
+                                        ? product.variants.find(v => v._id === item.variant) 
+                                        : product.variants;
                                 }
 
-                                const priceAmount = item.price?.amount || 0;
-                                const priceOriginal = item.price?.original || priceAmount;
-                                const discountPct = priceOriginal > 0
-                                    ? Math.round(((priceOriginal - priceAmount) / priceOriginal) * 100)
-                                    : 0;
+                                const addedPriceAmount = item.price?.amount || 0;
+                                const currentPriceAmount = selectedVariant?.price?.amount || product.prize?.amount || addedPriceAmount;
+                                
+                                const priceDiff = currentPriceAmount - addedPriceAmount;
+                                const isPriceIncreased = priceDiff > 0;
+                                const isPriceDecreased = priceDiff < 0;
                                 const imageUrl = selectedVariant?.images?.[0]?.url
                                     || product.image?.[0]?.url
                                     || 'https://placehold.co/400x600/0e0e0e/fff?text=No+Image';
@@ -260,14 +277,18 @@ const Cart = () => {
                                             {/* Price + Meta */}
                                             <div className="space-y-2">
                                                 <div className="flex items-baseline gap-3">
-                                                    <span className="text-xl font-bold text-[#e5e2e1]">₹{priceAmount.toLocaleString()}</span>
-                                                    {priceOriginal > priceAmount && (
-                                                        <>
-                                                            <span className="text-[#767575] line-through text-sm">₹{priceOriginal.toLocaleString()}</span>
-                                                            <span className="text-[#ffca45] font-bold text-[11px] tracking-widest">({discountPct}% OFF)</span>
-                                                        </>
-                                                    )}
+                                                    <span className="text-xl font-bold text-[#e5e2e1]">₹{currentPriceAmount.toLocaleString()}</span>
                                                 </div>
+                                                {isPriceDecreased && (
+                                                    <div className="text-[#4ade80] text-[11px] font-bold tracking-widest uppercase mt-1">
+                                                        Price dropped by ₹{Math.abs(priceDiff).toLocaleString()}
+                                                    </div>
+                                                )}
+                                                {isPriceIncreased && (
+                                                    <div className="text-[#ef4444] text-[11px] font-bold tracking-widest uppercase mt-1">
+                                                        Price increased by ₹{priceDiff.toLocaleString()}
+                                                    </div>
+                                                )}
                                                 <div className="flex flex-col gap-1 text-[10px] text-[#767575] uppercase tracking-widest font-semibold">
                                                     <div className="flex items-center gap-1">
                                                         <UndoIcon />
