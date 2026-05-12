@@ -168,6 +168,7 @@ const SkeletonCard = () => (
 
 const Home = () => {
   const products = useSelector(state => state.product.products)
+  const cartItems = useSelector(state => state.cart?.items || [])
   const { handleGetProducts } = useProduct()
   const [activeCategory, setActiveCategory] = useState('ALL')
   const [isLoading, setIsLoading] = useState(true)
@@ -221,12 +222,14 @@ const Home = () => {
               <button className="text-[#888] hover:text-white transition-colors hidden sm:block">
                 <HeartIcon filled={false} />
               </button>
-              <button className="text-[#888] hover:text-white transition-colors relative">
+              <Link to="/cart" className="text-[#888] hover:text-white transition-colors relative">
                 <BagIcon />
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#EAB308] rounded-full text-[8px] font-bold text-black flex items-center justify-center">
-                  0
-                </span>
-              </button>
+                {cartItems.length > 0 && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#EAB308] rounded-full text-[8px] font-bold text-black flex items-center justify-center">
+                    {cartItems.length}
+                  </span>
+                )}
+              </Link>
               <Link to="/login" className="text-[#888] hover:text-white transition-colors hidden sm:block">
                 <UserIcon />
               </Link>

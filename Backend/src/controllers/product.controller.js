@@ -20,6 +20,12 @@ export async function createProductController(req, res) {
       }));
     }
 
+    const sizes = req.body.sizes ? JSON.parse(req.body.sizes) : [];
+    const variants = sizes.map(s => ({
+      stock: Number(s.stock) || 0,
+      attributes: { size: s.size }
+    }));
+
     const product = await productModel.create({
       title,
       description,
@@ -28,7 +34,8 @@ export async function createProductController(req, res) {
         currency: prizeCurrency || "INR"
       },
       image: uploadedImages.map(img => ({ url: img.url })),
-      seller: seller._id
+      seller: seller._id,
+      variants
     });
 
     res.status(201).json({

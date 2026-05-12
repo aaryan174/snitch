@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #000000;
+            color: #e5e2e1;
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom scrollbar for minimalist feel */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #0e0e0e; }
+        ::-webkit-scrollbar-thumb { background: #353534; }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed-dim": "#c6c6c6",
+                        "outline-variant": "#4c4546",
+                        "on-primary-container": "#757575",
+                        "tertiary": "#c8c6c5",
+                        "inverse-surface": "#e5e2e1",
+                        "surface": "#131313",
+                        "tertiary-container": "#000000",
+                        "background": "#131313",
+                        "surface-container-highest": "#353534",
+                        "error-container": "#93000a",
+                        "surface-container-high": "#2a2a29",
+                        "on-secondary-fixed": "#251a00",
+                        "on-tertiary": "#313030",
+                        "on-error": "#690005",
+                        "tertiary-fixed": "#e5e2e1",
+                        "on-secondary": "#3f2e00",
+                        "on-primary-fixed": "#1b1b1b",
+                        "tertiary-fixed-dim": "#c8c6c5",
+                        "surface-tint": "#c6c6c6",
+                        "on-tertiary-container": "#767575",
+                        "surface-dim": "#131313",
+                        "primary-fixed": "#e2e2e2",
+                        "inverse-primary": "#5e5e5e",
+                        "secondary-fixed-dim": "#f7be1d",
+                        "outline": "#988e90",
+                        "on-background": "#e5e2e1",
+                        "surface-container-lowest": "#0e0e0e",
+                        "secondary-container": "#e4ae00",
+                        "error": "#ffb4ab",
+                        "primary": "#c6c6c6",
+                        "surface-bright": "#393939",
+                        "on-surface-variant": "#cfc4c5",
+                        "on-surface": "#e5e2e1",
+                        "on-tertiary-fixed-variant": "#474646",
+                        "inverse-on-surface": "#303030",
+                        "secondary-fixed": "#ffdf9a",
+                        "on-error-container": "#ffdad6",
+                        "surface-container-low": "#1b1c1b",
+                        "on-tertiary-fixed": "#1c1b1b",
+                        "surface-variant": "#353534",
+                        "secondary": "#ffca45",
+                        "on-secondary-container": "#5b4400",
+                        "on-primary": "#303030",
+                        "surface-container": "#1f201f",
+                        "primary-container": "#000000",
+                        "on-secondary-fixed-variant": "#5a4300",
+                        "on-primary-fixed-variant": "#474747"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xl": "80px",
+                        "gutter": "20px",
+                        "lg": "48px",
+                        "md": "24px",
+                        "container-margin": "40px",
+                        "xs": "8px",
+                        "sm": "16px",
+                        "unit": "4px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "display": ["Inter"],
+                        "nav-link": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "label-caps": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.2em", "fontWeight": "600"}],
+                        "display": ["80px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "nav-link": ["14px", {"lineHeight": "1.0", "letterSpacing": "0.15em", "fontWeight": "500"}],
+                        "headline-md": ["32px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                        "headline-lg": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "500"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-black text-on-surface">
+<!-- TopNavBar -->
+<nav class="bg-surface/70 backdrop-blur-xl text-primary docked full-width top-0 sticky z-50 flex justify-between items-center w-full px-container-margin py-md h-20">
+<div class="font-display text-headline-md font-black tracking-[0.3em] text-on-surface uppercase">SNITCH</div>
+<div class="hidden md:flex gap-md">
+<a class="font-nav-link text-nav-link text-on-surface hover:text-secondary-fixed-dim transition-colors duration-300" href="#">NEW ARRIVALS</a>
+<a class="font-nav-link text-nav-link text-on-surface hover:text-secondary-fixed-dim transition-colors duration-300" href="#">MEN</a>
+<a class="font-nav-link text-nav-link text-on-surface hover:text-secondary-fixed-dim transition-colors duration-300" href="#">WOMEN</a>
+<a class="font-nav-link text-nav-link text-on-surface hover:text-secondary-fixed-dim transition-colors duration-300" href="#">SALE</a>
+</div>
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined cursor-pointer hover:bg-white/5 p-2 rounded-full transition-all duration-300">search</span>
+<span class="material-symbols-outlined cursor-pointer hover:bg-white/5 p-2 rounded-full transition-all duration-300">favorite</span>
+<span class="material-symbols-outlined cursor-pointer hover:bg-white/5 p-2 rounded-full transition-all duration-300 text-secondary border-b-2 border-secondary pb-1">shopping_bag</span>
+<span class="material-symbols-outlined cursor-pointer hover:bg-white/5 p-2 rounded-full transition-all duration-300">person</span>
+</div>
+</nav>
+<main class="min-h-screen px-container-margin py-xl max-w-7xl mx-auto">
+<!-- Cart Heading -->
+<header class="mb-xl">
+<h1 class="font-display text-headline-lg md:text-display font-black tracking-tighter uppercase leading-none">
+                YOUR <span class="text-secondary">CART</span>
+</h1>
+<p class="font-label-caps text-label-caps text-on-surface-variant mt-sm">2 ITEMS PREPARED FOR DISPATCH</p>
+</header>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-xl">
+<!-- Cart Item List -->
+<section class="lg:col-span-8 flex flex-col gap-lg">
+<!-- Item 1 -->
+<div class="flex flex-col md:flex-row gap-md pb-lg border-b border-surface-container-highest">
+<div class="w-full md:w-48 aspect-[3/4] overflow-hidden bg-surface-container-low rounded-xl">
+<img alt="OVERSIZED OBSIDIAN TEE" class="w-full h-full object-cover grayscale contrast-125 hover:grayscale-0 transition-all duration-700" data-alt="A moody, high-fashion editorial photograph of a heavy-weight black oversized t-shirt draped on a minimalist mannequin. The setting is a dark, concrete underground gallery with dramatic rim lighting and deep shadows. The fabric texture is visible and crisp, reflecting a luxury streetwear aesthetic. The overall mood is nocturnal, exclusive, and architectural." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPysnzvvZyjlhfQq94bIqqdrK7g2WSEmGO2W07uYffCMh8e4rBrSQabCVIJwWfnRfxhY5w9h4NJdBaRadJhFA3zA_J4VmRyy1Vo1BUNgNYgMqNbUmppQ3_8mzaoO18umyQdXvLgfXUuJ7ASHYAtVUGEByaN2Ke0SIqbdGZiQ1gCmz8cYTObtgo7EgLrLwArvk4BRk1Mat4rBAsdG7GJuOMTBSwod8tRNn1J2FLfvd7z6PpkwJE4B116zQg9vrPZRSBnOpuDDt8gnw"/>
+</div>
+<div class="flex-1 flex flex-col justify-between py-xs">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-headline-md text-on-surface uppercase tracking-tight">OVERSIZED OBSIDIAN TEE</h3>
+<p class="font-label-caps text-label-caps text-on-surface-variant mt-xs">SIZE: L | COLOR: BLACK</p>
+</div>
+<p class="font-headline-md text-on-surface">$85.00</p>
+</div>
+<div class="flex items-center justify-between mt-md md:mt-0">
+<div class="flex items-center border border-outline-variant rounded-full px-md py-xs gap-md">
+<button class="hover:text-secondary transition-colors"><span class="material-symbols-outlined text-[18px]">remove</span></button>
+<span class="font-body-md text-on-surface min-w-[20px] text-center">1</span>
+<button class="hover:text-secondary transition-colors"><span class="material-symbols-outlined text-[18px]">add</span></button>
+</div>
+<button class="text-on-surface-variant hover:text-error transition-colors flex items-center gap-xs">
+<span class="material-symbols-outlined">delete</span>
+<span class="font-label-caps text-label-caps">REMOVE</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="flex flex-col md:flex-row gap-md pb-lg border-b border-surface-container-highest">
+<div class="w-full md:w-48 aspect-[3/4] overflow-hidden bg-surface-container-low rounded-xl">
+<img alt="MIDNIGHT UTILITY CARGO" class="w-full h-full object-cover grayscale contrast-125 hover:grayscale-0 transition-all duration-700" data-alt="Close-up architectural shot of high-end black cargo pants with technical hardware details. The lighting is low-key, highlighting the matte finish and sharp tailoring against a pitch-black background. Cinematic grain and soft glows create a premium underground fashion vibe. The style is strictly minimalist and high-contrast, fitting the Midnight Gallery aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAG-Z7ixYtvGswqHIPorM4Pdf0anM7GQiXRzqeddIIc6A0WGuq_-McIj6V3NMk9OGqyUdOM4ux5HxfDCUZYw0QLwLAQXiCDhDVzLZKAYcijCeA-Rx5nMNqjIkKxCD51GPdF5iagtn9XZN0CPe1mWWHy2V-s5hIibCrlnKAjzhU0JotZta_iiFq3T5GYCCzQ3zO6OZL-CiPHZ720aXIGRLV9iLTuL_Oe3SpbcMJtVZv1RtiCyl7OdI9yjkgM24gHV3eAsv-oUuzbLnU"/>
+</div>
+<div class="flex-1 flex flex-col justify-between py-xs">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-headline-md text-on-surface uppercase tracking-tight">MIDNIGHT UTILITY CARGO</h3>
+<p class="font-label-caps text-label-caps text-on-surface-variant mt-xs">SIZE: 32 | COLOR: PHANTOM BLACK</p>
+</div>
+<p class="font-headline-md text-on-surface">$145.00</p>
+</div>
+<div class="flex items-center justify-between mt-md md:mt-0">
+<div class="flex items-center border border-outline-variant rounded-full px-md py-xs gap-md">
+<button class="hover:text-secondary transition-colors"><span class="material-symbols-outlined text-[18px]">remove</span></button>
+<span class="font-body-md text-on-surface min-w-[20px] text-center">1</span>
+<button class="hover:text-secondary transition-colors"><span class="material-symbols-outlined text-[18px]">add</span></button>
+</div>
+<button class="text-on-surface-variant hover:text-error transition-colors flex items-center gap-xs">
+<span class="material-symbols-outlined">delete</span>
+<span class="font-label-caps text-label-caps">REMOVE</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Order Summary -->
+<aside class="lg:col-span-4">
+<div class="sticky top-24 bg-surface-container-lowest p-md md:p-lg rounded-xl border border-white/5">
+<h2 class="font-headline-md text-on-surface uppercase tracking-widest mb-lg">ORDER SUMMARY</h2>
+<div class="space-y-md mb-xl">
+<div class="flex justify-between items-center">
+<span class="font-label-caps text-label-caps text-on-surface-variant">SUBTOTAL</span>
+<span class="font-body-md text-on-surface">$230.00</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-label-caps text-label-caps text-on-surface-variant">SHIPPING</span>
+<span class="font-label-caps text-label-caps text-on-surface italic">CALCULATED AT NEXT STEP</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-label-caps text-label-caps text-on-surface-variant">TAXES</span>
+<span class="font-body-md text-on-surface">$0.00</span>
+</div>
+<div class="pt-md border-t border-surface-container-highest flex justify-between items-center">
+<span class="font-headline-md text-on-surface uppercase">TOTAL</span>
+<span class="font-headline-md text-on-surface font-black">$230.00</span>
+</div>
+</div>
+<button class="w-full bg-secondary text-black py-md px-lg rounded-full font-label-caps text-label-caps font-black hover:bg-secondary-fixed-dim transition-all duration-300 active:scale-[0.98]">
+                        PROCEED TO CHECKOUT
+                    </button>
+<div class="mt-lg flex flex-col gap-sm">
+<div class="flex items-center gap-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">local_shipping</span>
+<span class="font-label-caps text-[10px]">COMPLIMENTARY SHIPPING ON ORDERS OVER $500</span>
+</div>
+<div class="flex items-center gap-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">lock</span>
+<span class="font-label-caps text-[10px]">ENCRYPTED SECURE CHECKOUT</span>
+</div>
+</div>
+</div>
+</aside>
+</div>
+<!-- Cross-sell section (Minimalist Bento) -->
+<section class="mt-xl">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-lg tracking-[0.4em]">YOU MAY ALSO REQUIRE</h3>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-md">
+<div class="group cursor-pointer">
+<div class="aspect-square bg-surface-container overflow-hidden rounded-xl mb-sm">
+<img alt="Accessory 1" class="w-full h-full object-cover grayscale transition-all duration-500 group-hover:grayscale-0 group-hover:scale-110" data-alt="A minimal and sharp studio photograph of high-end designer sunglasses with thick black frames resting on a reflective obsidian surface. The lighting is cold and clinical, highlighting the sleek silhouette. The background is a gradient of deep charcoal. It captures a sense of quiet luxury and high-fashion accessory design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1eaF782GrGhJFmc0adaB7Cbezwl0XxHJCL7voY1JxO3rOOaHPCygig-UA36dRFvklQNketITlx8Em33dFhi_pKHOcDEqfaSJOr9YNRwH5oY1McYrIyAgjl4yFirVzMU70IBQHypx4ygMfes-WdDCv_lHZIVVBiWEYv09HyXaUOvZSV0vM_S4sbRec1VEq98DjWZxceZ1c3P1w4Mx_wCTSPtNisXeXo8HEIOeLzGdKSZ6qVf3EpgohWShihd1OKHngieNEFl8-bvA"/>
+</div>
+<p class="font-label-caps text-[10px] text-on-surface group-hover:text-secondary transition-colors">OBSIDIAN SHADES</p>
+<p class="font-body-md text-[14px]">$120</p>
+</div>
+<div class="group cursor-pointer">
+<div class="aspect-square bg-surface-container overflow-hidden rounded-xl mb-sm">
+<img alt="Accessory 2" class="w-full h-full object-cover grayscale transition-all duration-500 group-hover:grayscale-0 group-hover:scale-110" data-alt="Close up shot of premium black leather sneakers with a matte finish. They are presented in a dark, minimalist set with subtle architectural shadows. The lighting is focused on the premium textures of the leather and the unique sole design. The overall aesthetic is clean, modern, and high-end streetwear." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJU_SwbPnFQlQwIlOQBReg1N0-xXLRfdtsx39_bHSEvKNuoPAIZ2zAL-_OdgG3a78Z0rkBVOA-vK8MhSmCI94msqojc5a4yxvjXcXGnSW-rjMP19S5f1WP8_COImWch3sR6JphChQq1KBtbYbOQShgvsoovlAExipiQ3NeSByFjPdEK-CRrLlUjYtdx_vhUdxfs5eLKsjGXMd7bymT2OJXA8Teky-kSNLqeX6JwNLko0NesqFCPZPr0Wg7qzqZTeJAqm1p9_P6eQM"/>
+</div>
+<p class="font-label-caps text-[10px] text-on-surface group-hover:text-secondary transition-colors">NOCTURNAL RUNNER</p>
+<p class="font-body-md text-[14px]">$210</p>
+</div>
+<div class="group cursor-pointer">
+<div class="aspect-square bg-surface-container overflow-hidden rounded-xl mb-sm">
+<img alt="Accessory 3" class="w-full h-full object-cover grayscale transition-all duration-500 group-hover:grayscale-0 group-hover:scale-110" data-alt="A sleek black technical belt with a metal cobra-style buckle, displayed against a dark industrial backdrop. The image is high-contrast, emphasizing the metallic glint and the rugged nylon texture. The style is urban, tactical, and luxurious, fitting the SNITCH brand identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyI1pBOsULYCStj39JpbtFjhI0CLht8yaNpy6q1cVFbnWLCpR_g02Bv_wdgNBmaseDN9tcFy6m4VkKYkwxp-018S12OgykRfrfK4R-ZGbX17geR0e-tRjRntDfphpSzYayiCU1zlJuMWpbpmiGpDPMScFqsFwNOiBsera3k1aIrsHQj27Feb-Kopzd2amrgPZ-BHxMFCsJFtTLw3tvE5Dkl-1VTeKyYPX3RxB7OjtGWgAX1nKJp06qQqaz4pQdoW7hedxD4EjeYps"/>
+</div>
+<p class="font-label-caps text-[10px] text-on-surface group-hover:text-secondary transition-colors">UTILITY WEBBING</p>
+<p class="font-body-md text-[14px]">$45</p>
+</div>
+<div class="group cursor-pointer">
+<div class="aspect-square bg-surface-container overflow-hidden rounded-xl mb-sm">
+<img alt="Accessory 4" class="w-full h-full object-cover grayscale transition-all duration-500 group-hover:grayscale-0 group-hover:scale-110" data-alt="A minimalist heavy-weight black beanie with a subtle logo patch. The photography uses dramatic low-key lighting to emphasize the knit pattern and soft shadows. The setting is a cold, dark gallery atmosphere. It feels exclusive and high-quality, perfectly matching the Midnight Gallery aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCoZ09CKRL9_vjX_gi_pyKtuor83ocVA1spQ3QB_Yeh5bESFSOYaW6WWFzdZiK9aNWY2YLcARvL-TCiZnHeZTaev8CPP7Rmq3792R8Fogt05f2ox37AKzxGY50L2hH20F0Vx6_HDUPvbxmPoazjE_n8I6R_O6f4RRLnKu3iG0GDh3qzT0tT5PZVF_LA7XPHZddo7RgAeQtB2xJGmpYMvrx5MvCw_ta8JxLRQcRlzAp5zrXXh06YXwSbUifO2M8oXA4nQ7vaXbPmK14"/>
+</div>
+<p class="font-label-caps text-[10px] text-on-surface group-hover:text-secondary transition-colors">THERMAL SKULL CAP</p>
+<p class="font-body-md text-[14px]">$35</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest flex flex-col md:flex-row justify-between items-center w-full px-container-margin py-xl gap-md mt-xl">
+<div class="font-display text-headline-md font-black tracking-widest text-on-surface">SNITCH</div>
+<div class="flex flex-wrap justify-center gap-md">
+<a class="font-label-caps text-label-caps text-on-tertiary-container hover:text-on-surface transition-colors duration-300" href="#">STORY</a>
+<a class="font-label-caps text-label-caps text-on-tertiary-container hover:text-on-surface transition-colors duration-300" href="#">STORES</a>
+<a class="font-label-caps text-label-caps text-on-tertiary-container hover:text-on-surface transition-colors duration-300" href="#">CONTACT</a>
+<a class="font-label-caps text-label-caps text-on-tertiary-container hover:text-on-surface transition-colors duration-300" href="#">CAREERS</a>
+<a class="font-label-caps text-label-caps text-on-tertiary-container hover:text-on-surface transition-colors duration-300" href="#">LEGAL</a>
+</div>
+<p class="font-body-md text-body-md text-on-tertiary-container opacity-50 uppercase tracking-widest text-[10px]">© 2024 SNITCH. ALL RIGHTS RESERVED.</p>
+</footer>
+<!-- Bottom Sheet Mobile Summary (Hidden on Desktop) -->
+<div class="md:hidden fixed bottom-0 left-0 right-0 bg-surface/90 backdrop-blur-2xl border-t border-white/10 p-md z-50">
+<div class="flex justify-between items-center mb-md">
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant">TOTAL</p>
+<p class="font-headline-md text-on-surface">$230.00</p>
+</div>
+<button class="bg-secondary text-black py-sm px-lg rounded-full font-label-caps text-label-caps font-black">
+                CHECKOUT
+            </button>
+</div>
+</div>
+</body></html>

@@ -64,6 +64,7 @@ const CreateProduct = () => {
     prizeAmount: '',
     prizeCurrency: 'USD',
   });
+  const [sizes, setSizes] = useState([{ size: 'M', stock: 10 }]);
   const [images, setImages] = useState([]);
   const [previews, setPreviews] = useState([]);
   const [error, setError] = useState(null);
@@ -79,6 +80,20 @@ const CreateProduct = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleAddSize = () => {
+    setSizes([...sizes, { size: '', stock: 0 }]);
+  };
+
+  const handleSizeChange = (index, field, value) => {
+    const newSizes = [...sizes];
+    newSizes[index][field] = value;
+    setSizes(newSizes);
+  };
+
+  const handleRemoveSize = (index) => {
+    setSizes(sizes.filter((_, i) => i !== index));
   };
 
   const processFiles = useCallback((files) => {
@@ -158,6 +173,7 @@ const CreateProduct = () => {
       data.append('description', formData.description.trim());
       data.append('prizeAmount', formData.prizeAmount);
       data.append('prizeCurrency', formData.prizeCurrency);
+      data.append('sizes', JSON.stringify(sizes));
       images.forEach((file) => {
         data.append('image', file);
       });
@@ -298,8 +314,44 @@ const CreateProduct = () => {
               </div>
             </div>
 
-            {/* Visual Assets */}
+            {/* Sizes & Stock */}
             <div>
+              <label className="block text-[10px] font-bold text-[#666] tracking-widest uppercase mb-2">
+                Sizes & Stock
+              </label>
+              <div className="space-y-3 mb-6">
+                {sizes.map((s, index) => (
+                  <div key={index} className="flex gap-4 items-center">
+                    <input 
+                      type="text" 
+                      placeholder="Size (e.g. S, M, L)"
+                      value={s.size} 
+                      onChange={(e) => handleSizeChange(index, 'size', e.target.value)}
+                      className="w-1/2 bg-[#111111] border border-transparent focus:border-[#333] rounded-lg py-2 px-3 text-sm text-white placeholder-[#444] outline-none transition-all uppercase"
+                      required
+                    />
+                    <input 
+                      type="number" 
+                      placeholder="Stock quantity"
+                      value={s.stock} 
+                      onChange={(e) => handleSizeChange(index, 'stock', e.target.value)}
+                      min="0"
+                      className="w-1/2 bg-[#111111] border border-transparent focus:border-[#333] rounded-lg py-2 px-3 text-sm text-white placeholder-[#444] outline-none transition-all"
+                      required
+                    />
+                    {sizes.length > 1 && (
+                      <button type="button" onClick={() => handleRemoveSize(index)} className="text-red-500 hover:text-red-400 p-2">
+                        <CloseIcon />
+                      </button>
+                    )}
+                  </div>
+                ))}
+                <button type="button" onClick={handleAddSize} className="text-[#EAB308] text-[10px] font-bold tracking-widest uppercase hover:underline">
+                  + Add another size
+                </button>
+              </div>
+
+            {/* Visual Assets */}
               <label className="block text-[10px] font-bold text-[#666] tracking-widest uppercase mb-2">
                 Visual Assets
               </label>

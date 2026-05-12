@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { useUser } from '../Hooks/useUser.js'
-
+import { useCart } from '../../cart/hooks/useCart.js'
 // ─── SVG Icons ────────────────────────────────────────────────────────────────
 
 const ArrowLeftIcon = () => (
@@ -49,10 +49,12 @@ const OneProduct = () => {
   const navigate = useNavigate()
   const { handleOneProductData } = useUser()
   const product = useSelector(state => state.user.oneProduct)
+  const authUser = useSelector(state => state.auth.user)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [mainImage, setMainImage] = useState(0)
   const [selectedVariant, setSelectedVariant] = useState(null)
+  const {handleAddItem} = useCart()
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -130,9 +132,9 @@ const OneProduct = () => {
             <Link to="/" className="text-xl font-black tracking-[0.25em] uppercase">SNITCH</Link>
           </div>
           <div className="flex items-center gap-5">
-            <button className="text-[#888] hover:text-white transition-colors">
+            <Link to="/cart" className="text-[#888] hover:text-white transition-colors">
               <BagIcon />
-            </button>
+            </Link>
           </div>
         </div>
       </nav>
@@ -216,37 +218,32 @@ const OneProduct = () => {
             {/* Variants Options */}
             {variants.length > 0 && (
               <div className="mb-8">
-                <h3 className="text-xs font-bold tracking-widest uppercase mb-4 text-[#888]">Available Variants</h3>
+                <h3 className="text-xs font-bold tracking-widest uppercase mb-4 text-[#888]">Select Size</h3>
                 <div className="flex flex-wrap gap-3">
-                  {variants.map((variant, idx) => (
+                  {variants.map((variant, idx) => {
+                    const size = variant.attributes?.size || (variant.attributes?.get && variant.attributes.get('size')) || Object.values(variant.attributes || {})[0] || 'N/A';
+                    return (
                     <button
                       key={variant._id || idx}
                       onClick={() => handleSelectVariant(variant)}
-                      className={`flex flex-col items-start p-3 border rounded-xl transition-all duration-300 min-w-[120px] ${
-                        selectedVariant === variant 
-                        ? 'border-[#EAB308] bg-[#EAB308]/10' 
-                        : 'border-[#1a1a1a] bg-[#0e0e0e] hover:border-[#333]'
+                      disabled={variant.stock <= 0}
+                      className={`flex flex-col items-center justify-center p-3 border rounded-xl transition-all duration-300 min-w-[80px] ${
+                        variant.stock <= 0 
+                        ? 'border-[#1a1a1a] bg-[#0a0a0a] opacity-50 cursor-not-allowed'
+                        : selectedVariant === variant 
+                          ? 'border-[#EAB308] bg-[#EAB308]/10' 
+                          : 'border-[#1a1a1a] bg-[#0e0e0e] hover:border-[#333]'
                       }`}
                     >
-                      {/* Thumbnail if available */}
-                      {variant.images?.[0]?.url && (
-                        <div className="w-full h-16 bg-[#111] rounded-lg mb-3 overflow-hidden">
-                          <img src={variant.images[0].url} alt="Variant" className="w-full h-full object-cover" />
-                        </div>
-                      )}
-                      {/* Attributes */}
-                      <div className="flex gap-2 flex-wrap mb-1">
-                        {variant.attributes && Object.entries(variant.attributes).map(([k, v]) => (
-                          <span key={k} className="text-[10px] font-medium text-white bg-[#1a1a1a] px-2 py-0.5 rounded">
-                            <span className="text-[#888]">{k}:</span> {v}
-                          </span>
-                        ))}
-                      </div>
-                      <span className="text-xs text-[#EAB308] font-bold mt-1">
-                        {currencySymbol}{Number(variant.price?.amount || product.prize?.amount).toLocaleString()}
+                      <span className="text-sm font-bold text-white mb-1 uppercase">
+                        {size}
+                      </span>
+                      <span className={`text-[10px] font-semibold tracking-wider ${variant.stock > 0 ? 'text-[#888]' : 'text-red-500'}`}>
+                        {variant.stock > 0 ? `${variant.stock} left` : 'Out of Stock'}
                       </span>
                     </button>
-                  ))}
+                    );
+                  })}
                 </div>
                 {selectedVariant && (
                   <button onClick={() => setSelectedVariant(null)} className="text-[10px] text-[#EAB308] hover:underline mt-3 font-semibold tracking-wider uppercase">
@@ -256,15 +253,55 @@ const OneProduct = () => {
               </div>
             )}
 
-            {/* Actions */}
             <div className="space-y-4 mb-10 max-w-md mt-4">
-              <button className="w-full bg-[#EAB308] hover:bg-[#FFD165] text-black text-xs font-bold tracking-[0.15em] uppercase py-4 rounded-xl flex items-center justify-center gap-2 transition-all duration-300 shadow-[0_0_20px_rgba(234,179,8,0.15)] hover:shadow-[0_0_30px_rgba(234,179,8,0.25)]">
+              <button 
+                onClick={async () => {
+                  if (!authUser) {
+                    navigate('/login');
+                    return;
+                  }
+                  if (variants.length > 0 && !selectedVariant) {
+                    alert('Please select a size first.');
+                    return;
+                  }
+                  try {
+                    await handleAddItem({
+                      productId: product._id,
+                      variantId: selectedVariant?._id
+                    });
+                    navigate('/cart');
+                  } catch (error) {
+                    alert(error.response?.data?.message || 'Failed to add item to cart');
+                  }
+                }} 
+                className="w-full bg-[#EAB308] hover:bg-[#FFD165] text-black text-xs font-bold tracking-[0.15em] uppercase py-4 rounded-xl flex items-center justify-center gap-2 transition-all duration-300 shadow-[0_0_20px_rgba(234,179,8,0.15)] hover:shadow-[0_0_30px_rgba(234,179,8,0.25)]"
+              >
                 <BagIcon />
                 ADD TO BAG
               </button>
               
               <div className="flex gap-4">
-                <button className="flex-1 bg-transparent hover:bg-white hover:text-black text-white text-xs font-bold tracking-[0.15em] uppercase py-4 rounded-xl border border-[#4F4633] transition-all duration-300">
+                <button 
+                  onClick={async () => {
+                    if (!authUser) {
+                      navigate('/login');
+                      return;
+                    }
+                    if (variants.length > 0 && !selectedVariant) {
+                      alert('Please select a size first.');
+                      return;
+                    }
+                    try {
+                      await handleAddItem({
+                        productId: product._id,
+                        variantId: selectedVariant?._id
+                      });
+                      navigate('/cart');
+                    } catch (error) {
+                      alert(error.response?.data?.message || 'Failed to add item to cart');
+                    }
+                  }}
+                  className="flex-1 bg-transparent hover:bg-white hover:text-black text-white text-xs font-bold tracking-[0.15em] uppercase py-4 rounded-xl border border-[#4F4633] transition-all duration-300">
                   BUY IT NOW
                 </button>
                 <button className="w-14 shrink-0 bg-[#111] hover:bg-[#1a1a1a] flex items-center justify-center rounded-xl border border-[#1a1a1a] transition-all duration-300 group">

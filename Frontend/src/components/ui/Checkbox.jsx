@@ -2,7 +2,7 @@ import React from 'react';
 
 const Checkbox = ({ id, label, checked, onChange, required = false }) => {
   return (
-    <div className="flex items-start gap-3">
+    <label htmlFor={id} className="flex items-start gap-3 cursor-pointer group">
       <div className="relative flex items-center justify-center mt-0.5">
         <input
           type="checkbox"
@@ -12,10 +12,10 @@ const Checkbox = ({ id, label, checked, onChange, required = false }) => {
           required={required}
           className="peer sr-only"
         />
-        <div className={`w-5 h-5 rounded-[4px] border transition-all duration-200 flex items-center justify-center cursor-pointer
+        <div className={`w-5 h-5 rounded-[4px] border transition-all duration-200 flex items-center justify-center
           ${checked 
             ? 'bg-white border-white' 
-            : 'bg-transparent border-[#444] hover:border-[#666]'
+            : 'bg-transparent border-[#444] group-hover:border-[#666]'
           }
         `}>
           <svg 
@@ -29,10 +29,10 @@ const Checkbox = ({ id, label, checked, onChange, required = false }) => {
           </svg>
         </div>
       </div>
-      <label htmlFor={id} className="text-sm text-gray-400 cursor-pointer hover:text-gray-300 transition-colors select-none leading-tight">
+      <div className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors select-none leading-tight">
         {label}
-      </label>
-    </div>
+      </div>
+    </label>
   );
 };
 
