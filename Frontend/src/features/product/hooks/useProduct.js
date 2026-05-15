@@ -1,9 +1,10 @@
 import { createProduct, getProductData, getSellerData, createVariant } from "../services/product.api.js";
-import { setProducts, setSellerProducts } from "../state/product.slice.js";
+import { setProducts, setSellerProducts, setPagination } from "../state/product.slice.js";
 import { useDispatch } from "react-redux";
 
 export const useProduct = () => {
     const dispatch = useDispatch();
+
 
     async function handleCreateProduct(formData) {
         const data = await createProduct(formData);
@@ -16,9 +17,11 @@ export const useProduct = () => {
         return data.products
     }
 
-    async function handleGetProducts() {
-        const data = await getProductData();
+    async function handleGetProducts({ search = '', category = 'ALL', page = 1, limit = 8 } = {}) {
+        const data = await getProductData({ search, category, page, limit });
         dispatch(setProducts(data.products))
+        if (data.pagination) dispatch(setPagination(data.pagination))
+        return data;
     }
 
     async function handleCreateVariant(productId, formData) {

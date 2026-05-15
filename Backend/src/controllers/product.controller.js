@@ -85,13 +85,45 @@ export const getSellerData = async (req, res) => {
 }
 
 export const getProductUserData = async (req, res) => {
-  const products = await productModel.find()
+  try {
+    const { search, category, page = 1, limit = 8 } = req.query;
+    const filter = {};
 
-  return res.status(200).json({
-    message: "Products fetched successfully",
-    success: true,
-    products
-  })
+    if (search) {
+      filter.$or = [
+        { title:       { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } },
+      ];
+    }
+
+    if (category && category !== 'ALL') {
+      filter.category = category;
+    }
+
+    const pageNum  = Math.max(1, parseInt(page));
+    const limitNum = Math.min(20, Math.max(1, parseInt(limit)));
+    const skip     = (pageNum - 1) * limitNum;
+
+    const [products, totalProducts] = await Promise.all([
+      productModel.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limitNum),
+      productModel.countDocuments(filter),
+    ]);
+
+    return res.status(200).json({
+      message: "Products fetched successfully",
+      success: true,
+      products,
+      pagination: {
+        currentPage:   pageNum,
+        totalPages:    Math.ceil(totalProducts / limitNum),
+        totalProducts,
+        limit:         limitNum,
+      }
+    });
+  } catch (error) {
+    console.log("getProductUserData error", error.message);
+    return res.status(500).json({ message: "Server error", success: false });
+  }
 }
 
 export const getOneProductDetail = async (req, res) => {
@@ -196,4 +228,107 @@ export const createVariantController = async (req, res) => {
       success: false
     });
   }
-}
+}
+
+// ─── Edit Product ─────────────────────────────────────────────────────────────
+
+export const updateProductController = async (req, res) => {
+  try {
+    const { productId } = req.params;
+
+    const product = await productModel.findOne({
+      _id: productId,
+      seller: req.user._id
+    });
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found or unauthorized", success: false });
+    }
+
+    const { title, description, prizeAmount, prizeCurrency } = req.body;
+
+    if (title)       product.title       = title;
+    if (description) product.description = description;
+    if (prizeAmount) {
+      product.prize = {
+        amount:   Number(prizeAmount),
+        currency: prizeCurrency || product.prize?.currency || "INR"
+      };
+    }
+
+    // Append any new images (don't delete existing ones)
+    if (req.files && req.files.length > 0) {
+      const uploaded = await Promise.all(req.files.map(file =>
+        uploadImage({ buffer: file.buffer, fileName: file.originalname })
+      ));
+      product.image.push(...uploaded.map(img => ({ url: img.url })));
+    }
+
+    await product.save();
+
+    return res.status(200).json({
+      message: "Product updated successfully",
+      success: true,
+      product
+    });
+  } catch (error) {
+    console.log("Update product error", error.message);
+    return res.status(500).json({ message: "Server error", success: false });
+  }
+}
+
+// ─── Edit Variant ─────────────────────────────────────────────────────────────
+
+export const updateVariantController = async (req, res) => {
+  try {
+    const { productId, variantId } = req.params;
+
+    const product = await productModel.findOne({
+      _id: productId,
+      seller: req.user._id
+    });
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found or unauthorized", success: false });
+    }
+
+    const variant = product.variants.id(variantId);
+    if (!variant) {
+      return res.status(404).json({ message: "Variant not found", success: false });
+    }
+
+    const { priceAmount, priceCurrency, stock, attributes } = req.body;
+
+    if (stock    !== undefined) variant.stock = Number(stock);
+    if (priceAmount !== undefined) {
+      variant.price = {
+        amount:   Number(priceAmount),
+        currency: priceCurrency || variant.price?.currency || product.prize?.currency || "INR"
+      };
+    }
+    if (attributes) {
+      const parsed = typeof attributes === "string" ? JSON.parse(attributes) : attributes;
+      variant.attributes = parsed;
+    }
+
+    // Append new images to variant
+    if (req.files && req.files.length > 0) {
+      const uploaded = await Promise.all(req.files.map(file =>
+        uploadImage({ buffer: file.buffer, fileName: file.originalname })
+      ));
+      variant.images.push(...uploaded.map(img => ({ url: img.url })));
+    }
+
+    await product.save();
+
+    return res.status(200).json({
+      message: "Variant updated successfully",
+      success: true,
+      product
+    });
+  } catch (error) {
+    console.log("Update variant error", error.message);
+    return res.status(500).json({ message: "Server error", success: false });
+  }
+}
+

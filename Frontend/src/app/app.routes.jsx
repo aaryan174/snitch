@@ -10,6 +10,8 @@ import OneProduct from "../features/User/Pages/OneProduct.jsx"
 import SellerProductDetail from "../features/product/pages/SellerProductDetail.jsx"
 import CreateVariant from "../features/product/pages/CreateVariant.jsx"
 import Cart from "../features/cart/pages/Cart.jsx"
+import OrderSuccess from "../features/cart/pages/OrderSucess.jsx"
+import MyOrders from "../features/cart/pages/MyOrders.jsx"
 
 export const routes = createBrowserRouter([
     {
@@ -54,5 +56,13 @@ export const routes = createBrowserRouter([
     {
         path: "/cart",
         element: <Protected><Cart /></Protected>
+    },
+    {
+        path: "/order-success",
+        element: <Protected><OrderSuccess /></Protected>
+    },
+    {
+        path: "/orders",
+        element: <Protected><MyOrders /></Protected>
     }
 ])

@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useProduct } from "../hooks/useProduct"
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 // ─── SVG Icons ────────────────────────────────────────────────────────────────
 
@@ -167,21 +167,70 @@ const SkeletonCard = () => (
 // ─── Main Home Component ──────────────────────────────────────────────────────
 
 const Home = () => {
-  const products = useSelector(state => state.product.products)
-  const cartItems = useSelector(state => state.cart?.items || [])
+  const products    = useSelector(state => state.product.products)
+  const pagination  = useSelector(state => state.product.pagination) || { currentPage: 1, totalPages: 1, totalProducts: 0, limit: 8 }
+  const cartItems   = useSelector(state => state.cart?.items || [])
+  const authUser    = useSelector(state => state.auth?.user)
   const { handleGetProducts } = useProduct()
+  const navigate = useNavigate()
   const [activeCategory, setActiveCategory] = useState('ALL')
-  const [isLoading, setIsLoading] = useState(true)
-  const [searchOpen, setSearchOpen] = useState(false)
+  const [currentPage, setCurrentPage]       = useState(1)
+  const [isLoading, setIsLoading]           = useState(true)
+  const [searchOpen, setSearchOpen]         = useState(false)
+  const [searchQuery, setSearchQuery]       = useState('')
+  const [userMenuOpen, setUserMenuOpen]     = useState(false)
+  const userMenuRef       = useRef(null)
+  const searchDebounceRef = useRef(null)
 
+  // Close dropdown on outside click
   useEffect(() => {
-    const fetchProducts = async () => {
-      setIsLoading(true)
-      await handleGetProducts()
-      setIsLoading(false)
+    const handler = (e) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target)) {
+        setUserMenuOpen(false)
+      }
     }
-    fetchProducts()
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
   }, [])
+
+  // Initial load
+  useEffect(() => {
+    fetchProducts('ALL', '')
+  }, [])
+
+  const fetchProducts = async (category, search, page = 1) => {
+    setIsLoading(true)
+    await handleGetProducts({ category, search, page })
+    setIsLoading(false)
+  }
+
+  // Category change — immediate, reset to page 1
+  const handleCategoryChange = (cat) => {
+    setActiveCategory(cat)
+    setSearchQuery('')
+    setCurrentPage(1)
+    fetchProducts(cat, '', 1)
+  }
+
+  // Search — debounced 400ms, reset to page 1
+  const handleSearchChange = (e) => {
+    const val = e.target.value
+    setSearchQuery(val)
+    if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current)
+    searchDebounceRef.current = setTimeout(() => {
+      setActiveCategory('ALL')
+      setCurrentPage(1)
+      fetchProducts('ALL', val, 1)
+    }, 400)
+  }
+
+  // Page change
+  const handlePageChange = (page) => {
+    setCurrentPage(page)
+    fetchProducts(activeCategory, searchQuery, page)
+    const top = document.getElementById('products')?.offsetTop ?? 0
+    window.scrollTo({ top: top - 80, behavior: 'smooth' })
+  }
 
   return (
     <div className="min-h-screen bg-[#000000] text-white font-sans selection:bg-yellow-400 selection:text-black">
@@ -230,9 +279,47 @@ const Home = () => {
                   </span>
                 )}
               </Link>
-              <Link to="/login" className="text-[#888] hover:text-white transition-colors hidden sm:block">
-                <UserIcon />
-              </Link>
+              {/* User icon / dropdown */}
+              <div className="relative hidden sm:block" ref={userMenuRef}>
+                <button
+                  onClick={() => authUser ? setUserMenuOpen(v => !v) : navigate('/login')}
+                  className="text-[#888] hover:text-white transition-colors"
+                  aria-label="User menu"
+                >
+                  <UserIcon />
+                </button>
+
+                {/* Dropdown — only shown when logged in */}
+                {authUser && userMenuOpen && (
+                  <div className="absolute right-0 top-10 w-52 bg-[#111] border border-white/[0.06] rounded-xl shadow-2xl shadow-black/60 overflow-hidden z-50">
+                    <div className="px-4 py-3 border-b border-white/[0.06]">
+                      <p className="text-[10px] tracking-[0.15em] uppercase text-[#555] font-semibold">Signed in as</p>
+                      <p className="text-xs text-white font-semibold mt-0.5 truncate">{authUser.name ?? authUser.email}</p>
+                    </div>
+                    <Link
+                      to="/orders"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center gap-3 px-4 py-3 text-[11px] font-semibold tracking-[0.1em] uppercase text-[#888] hover:text-white hover:bg-white/[0.04] transition-colors"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
+                        <path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>
+                      </svg>
+                      My Orders
+                    </Link>
+                    <Link
+                      to="/cart"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center gap-3 px-4 py-3 text-[11px] font-semibold tracking-[0.1em] uppercase text-[#888] hover:text-white hover:bg-white/[0.04] transition-colors"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>
+                      </svg>
+                      My Bag
+                    </Link>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -243,7 +330,10 @@ const Home = () => {
             <div className="relative">
               <input
                 type="text"
-                placeholder="Search products..."
+                value={searchQuery}
+                onChange={handleSearchChange}
+                placeholder="Search products, brands, styles…"
+                autoFocus={searchOpen}
                 className="w-full bg-[#0E0E0E] border border-[#1a1a1a] rounded-lg py-3 pl-12 pr-4 text-sm text-white placeholder-[#444] outline-none focus:border-[#EAB308]/30 transition-colors"
               />
               <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#555]">
@@ -311,7 +401,7 @@ const Home = () => {
             {CATEGORIES.map((cat) => (
               <button
                 key={cat}
-                onClick={() => setActiveCategory(cat)}
+                onClick={() => handleCategoryChange(cat)}
                 className={`shrink-0 text-[10px] font-bold tracking-[0.15em] uppercase px-5 py-2.5 rounded-full transition-all duration-300 ${
                   activeCategory === cat
                     ? 'bg-[#EAB308] text-black shadow-[0_0_15px_rgba(234,179,8,0.2)]'
@@ -333,10 +423,10 @@ const Home = () => {
           <div>
             <p className="text-[#EAB308] text-[10px] font-bold tracking-[0.3em] uppercase mb-2 flex items-center gap-3">
               <span className="w-5 h-[1px] bg-[#EAB308]" />
-              CURATED FOR YOU
+              {searchQuery ? `SEARCH: "${searchQuery}"` : activeCategory !== 'ALL' ? activeCategory : 'CURATED FOR YOU'}
             </p>
             <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">
-              Featured Products
+              {searchQuery ? 'Search Results' : activeCategory !== 'ALL' ? activeCategory.charAt(0) + activeCategory.slice(1).toLowerCase() : 'Featured Products'}
             </h2>
           </div>
           <div className="hidden sm:flex items-center gap-2 text-[#666]">
@@ -377,6 +467,64 @@ const Home = () => {
             </button>
           </div>
         )}
+
+        {/* ─── Pagination ───────────────────────────────────────────── */}
+        {!isLoading && pagination.totalPages > 1 && (
+          <div className="flex items-center justify-center gap-2 mt-14">
+            {/* Prev */}
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="flex items-center gap-2 px-4 py-2.5 text-[11px] font-bold tracking-[0.1em] uppercase border border-white/[0.08] rounded-lg text-[#888] hover:text-white hover:border-white/20 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+              Prev
+            </button>
+
+            {/* Page numbers */}
+            <div className="flex items-center gap-1">
+              {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map(p => {
+                const isActive = p === currentPage
+                const isNear   = Math.abs(p - currentPage) <= 2 || p === 1 || p === pagination.totalPages
+                if (!isNear) {
+                  const isEdge = p === currentPage - 3 || p === currentPage + 3
+                  return isEdge ? <span key={p} className="text-[#444] px-1 text-sm">…</span> : null
+                }
+                return (
+                  <button
+                    key={p}
+                    onClick={() => handlePageChange(p)}
+                    className={`w-9 h-9 text-[11px] font-bold rounded-lg transition-all ${
+                      isActive
+                        ? 'bg-[#EAB308] text-black shadow-[0_0_12px_rgba(234,179,8,0.3)]'
+                        : 'text-[#888] hover:text-white hover:bg-white/[0.06] border border-white/[0.06]'
+                    }`}
+                  >
+                    {p}
+                  </button>
+                )
+              })}
+            </div>
+
+            {/* Next */}
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === pagination.totalPages}
+              className="flex items-center gap-2 px-4 py-2.5 text-[11px] font-bold tracking-[0.1em] uppercase border border-white/[0.08] rounded-lg text-[#888] hover:text-white hover:border-white/20 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              Next
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+          </div>
+        )}
+
+        {/* Page count label */}
+        {!isLoading && pagination.totalPages > 1 && (
+          <p className="text-center text-[10px] text-[#444] tracking-[0.2em] uppercase mt-4">
+            Page {currentPage} of {pagination.totalPages} · {pagination.totalProducts} products
+          </p>
+        )}
+
       </section>
 
       {/* ─── Newsletter Banner ───────────────────────────────────────── */}
@@ -434,7 +582,7 @@ const Home = () => {
             {/* Links */}
             {[
               { title: 'SHOP', links: ['New Arrivals', 'Best Sellers', 'Sale', 'Collections'] },
-              { title: 'HELP', links: ['Contact Us', 'FAQs', 'Shipping', 'Returns'] },
+              { title: 'HELP', links: ['My Orders', 'Contact Us', 'FAQs', 'Shipping', 'Returns'] },
               { title: 'COMPANY', links: ['About', 'Careers', 'Press', 'Sustainability'] },
             ].map((col) => (
               <div key={col.title}>
@@ -442,7 +590,11 @@ const Home = () => {
                 <ul className="space-y-3">
                   {col.links.map((link) => (
                     <li key={link}>
-                      <a href="#" className="text-[#666] text-xs hover:text-white transition-colors">{link}</a>
+                      {link === 'My Orders' ? (
+                        <Link to="/orders" className="text-[#666] text-xs hover:text-white transition-colors">{link}</Link>
+                      ) : (
+                        <a href="#" className="text-[#666] text-xs hover:text-white transition-colors">{link}</a>
+                      )}
                     </li>
                   ))}
                 </ul>

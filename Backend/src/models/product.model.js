@@ -22,6 +22,11 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    category: {
+        type: String,
+        enum: ['SHIRTS', 'JACKETS', 'JEANS', 'SNEAKERS', 'ACCESSORIES', 'NEW ARRIVALS', 'TRENDING'],
+        default: 'SHIRTS'
+    },
     seller:{
         type : mongoose.Schema.Types.ObjectId,
         ref: "UserSnitch",

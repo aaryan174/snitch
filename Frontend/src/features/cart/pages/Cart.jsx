@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useCart } from '../hooks/useCart';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
+import {useRazorpay} from "react-razorpay";
 
 const ArrowLeftIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -75,12 +76,13 @@ const VerifiedIcon = () => (
 );
 
 const Cart = () => {
-    const { handleGetCart, handleRemoveItem, handleUpdateQuantity } = useCart();
+    const { handleGetCart, handleRemoveItem, handleUpdateQuantity, handleCreateCartOrder, handleVerifyCartOrder } = useCart();
     const cartItems = useSelector(state => state.cart.items);
     const authUser = useSelector(state => state.auth.user);
     const authLoading = useSelector(state => state.auth.loading);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
+    const {error, isLoading, Razorpay} = useRazorpay();
 
     useEffect(() => {
         if (!authLoading && !authUser) {
@@ -135,6 +137,38 @@ const Cart = () => {
     }, 0);
 
     const discount = totalMRP - subtotal;
+
+    async function handleCheckOut() {
+        const order = await handleCreateCartOrder()
+        console.log(order)
+
+         const options = {
+            key: "rzp_test_Somd3IhoO7q4LS",
+            amount: order.amount, // Amount in paise
+            currency: order.currency,
+            name: "Snitch",
+            description: "Test Transaction",
+            order_id: order.id, // Generate order_id on server
+            handler: async (response) => {
+
+                const isValid = await handleVerifyCartOrder(response)
+
+                if (isValid) {
+                    navigate(`/order-success?order_id=${response?.razorpay_order_id}`)
+                }
+            },
+            prefill: {
+                name: authUser?.name,
+                email: authUser?.email,
+            },
+            theme: {
+                color: "#f7be1d",
+            },
+        };
+
+        const razorpayInstance = new Razorpay(options);
+        razorpayInstance.open();
+    }
 
     return (
         <div className="bg-[#131313] text-[#e5e2e1] min-h-screen font-sans">
@@ -330,7 +364,7 @@ const Cart = () => {
                                     </div>
                                     <div className="flex justify-between items-center">
                                         <span className="text-[#e5e2e1]/70">Platform Fee</span>
-                                        <span>₹23</span>
+                                        <span>₹0</span>
                                     </div>
                                 </div>
 
@@ -339,7 +373,7 @@ const Cart = () => {
                                         <span className="text-base font-bold uppercase tracking-tight">Total Amount</span>
                                         <span className="text-xl font-extrabold">₹{subtotal.toLocaleString()}</span>
                                     </div>
-                                    <button className="w-full bg-[#ffca45] text-[#3f2e00] py-4 font-bold text-[11px] tracking-[0.3em] rounded uppercase transition-transform active:scale-[0.98] shadow-lg shadow-yellow-500/10 hover:brightness-110">
+                                    <button onClick={handleCheckOut} className="w-full bg-[#ffca45] text-[#3f2e00] py-4 font-bold text-[11px] tracking-[0.3em] rounded uppercase transition-transform active:scale-[0.98] shadow-lg shadow-yellow-500/10 hover:brightness-110">
                                         Place Order
                                     </button>
                                 </div>
