@@ -125,7 +125,8 @@ export const googleCallback = async (req, res) => {
 
     res.cookie("token", token, cookieOptions);
 
-    res.redirect("http://localhost:5173/");
+    const frontendUrl = process.env.NODE_ENV === "production" ? "/" : "http://localhost:5173/";
+    res.redirect(frontendUrl);
 
   } catch (error) {
     console.log(error.message)
