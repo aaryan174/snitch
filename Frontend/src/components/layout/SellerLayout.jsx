@@ -1,5 +1,7 @@
-import React from 'react';
-import { Outlet, NavLink } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from 'react';
+import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { useAuth } from '../../features/Auth/hooks/useAuth.js';
 
 // ─── Icons ──────────────────────────────────────────────────────────────────
 
@@ -68,6 +70,23 @@ const BellIcon = () => (
 // ─── Main Component ──────────────────────────────────────────────────────────
 
 const SellerLayout = () => {
+  const authUser = useSelector(state => state.auth?.user);
+  const { handleLogout } = useAuth();
+  const navigate = useNavigate();
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handler = (e) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target)) {
+        setUserMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
   return (
     <div className="flex flex-col h-screen bg-[#070707] text-white font-sans overflow-hidden">
       {/* ─── Top Navbar ─────────────────────────────────────────────── */}
@@ -99,8 +118,38 @@ const SellerLayout = () => {
             <BellIcon />
             <span className="absolute top-0 right-0 w-2 h-2 bg-yellow-400 rounded-full border border-black"></span>
           </button>
-          <div className="w-8 h-8 rounded bg-[#222] overflow-hidden border border-[#333] cursor-pointer">
-            <img src="https://ui-avatars.com/api/?name=Admin&background=EAB308&color=000&rounded=false" alt="Profile" className="w-full h-full object-cover" />
+          <div className="relative" ref={userMenuRef}>
+            <div 
+              onClick={() => setUserMenuOpen(!userMenuOpen)}
+              className="w-8 h-8 rounded bg-[#222] overflow-hidden border border-[#333] cursor-pointer"
+            >
+              <img src="https://ui-avatars.com/api/?name=Admin&background=EAB308&color=000&rounded=false" alt="Profile" className="w-full h-full object-cover" />
+            </div>
+
+            {/* Profile Dropdown */}
+            {userMenuOpen && (
+              <div className="absolute right-0 top-10 w-52 bg-[#111] border border-white/[0.06] rounded-xl shadow-2xl shadow-black/60 overflow-hidden z-50">
+                <div className="px-4 py-3 border-b border-white/[0.06]">
+                  <p className="text-[10px] tracking-[0.15em] uppercase text-[#555] font-semibold">Signed in as</p>
+                  <p className="text-xs text-white font-semibold mt-0.5 truncate">{authUser?.name ?? authUser?.email ?? 'Seller Admin'}</p>
+                </div>
+                <button
+                  onClick={async () => {
+                    setUserMenuOpen(false);
+                    await handleLogout();
+                    navigate('/');
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-[11px] font-bold tracking-[0.1em] uppercase text-red-500 hover:text-white hover:bg-red-500/20 transition-colors"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" y1="12" x2="9" y2="12" />
+                  </svg>
+                  Logout
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </nav>

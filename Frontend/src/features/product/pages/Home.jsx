@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useProduct } from "../hooks/useProduct"
+import { useAuth } from "../../Auth/hooks/useAuth"
 import { Link, useNavigate } from 'react-router-dom'
 
 // ─── SVG Icons ────────────────────────────────────────────────────────────────
@@ -62,6 +63,7 @@ const ProductCard = ({ product, index }) => {
   const [isWishlisted, setIsWishlisted] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
   const [imageLoaded, setImageLoaded] = useState(false)
+  const navigate = useNavigate()
 
   const currencySymbol = CURRENCY_SYMBOLS[product?.prize?.currency] || '₹'
   const imageUrl = product?.image?.[0]?.url || ''
@@ -123,7 +125,15 @@ const ProductCard = ({ product, index }) => {
 
         {/* Quick Add Button */}
         <div className={`absolute bottom-3 left-3 right-3 transition-all duration-300 ${isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
-          <button className="w-full bg-white hover:bg-gray-100 text-black text-[10px] font-bold tracking-widest uppercase py-3 rounded-lg flex items-center justify-center gap-2 transition-colors shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+          <button 
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              // Navigate to the product page so the user can select sizes/add.
+              navigate(`/Product/${product._id}`);
+            }}
+            className="w-full bg-white hover:bg-gray-100 text-black text-[10px] font-bold tracking-widest uppercase py-3 rounded-lg flex items-center justify-center gap-2 transition-colors shadow-[0_0_30px_rgba(0,0,0,0.5)]"
+          >
             <BagIcon />
             ADD TO BAG
           </button>
@@ -172,6 +182,7 @@ const Home = () => {
   const cartItems   = useSelector(state => state.cart?.items || [])
   const authUser    = useSelector(state => state.auth?.user)
   const { handleGetProducts } = useProduct()
+  const { handleLogout } = useAuth()
   const navigate = useNavigate()
   const [activeCategory, setActiveCategory] = useState('ALL')
   const [currentPage, setCurrentPage]       = useState(1)
@@ -317,6 +328,22 @@ const Home = () => {
                       </svg>
                       My Bag
                     </Link>
+                    <div className="border-t border-white/[0.06] mt-1"></div>
+                    <button
+                      onClick={async () => {
+                        setUserMenuOpen(false)
+                        await handleLogout()
+                        navigate('/')
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-3 text-[11px] font-bold tracking-[0.1em] uppercase text-red-500 hover:text-white hover:bg-red-500/20 transition-colors"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                        <polyline points="16 17 21 12 16 7" />
+                        <line x1="21" y1="12" x2="9" y2="12" />
+                      </svg>
+                      Logout
+                    </button>
                   </div>
                 )}
               </div>

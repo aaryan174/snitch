@@ -99,7 +99,7 @@ const Register = () => {
         <div className="hidden lg:flex w-1/2 relative bg-[#050505] flex-col justify-end p-12 overflow-hidden">
           {/* Base Image */}
           <img
-            src="/hero-yellow-model.png"
+            src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1000&auto=format&fit=crop"
             alt="Fashion Model Background"
             className="absolute inset-0 w-full h-full object-cover opacity-90"
           />

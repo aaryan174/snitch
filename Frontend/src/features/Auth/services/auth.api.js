@@ -20,3 +20,8 @@ export async function getUserProfile() {
     const res = await Authapi.get("/profile")
     return res.data;
 }
+
+export async function logout() {
+    const res = await Authapi.post("/logout")
+    return res.data;
+}
