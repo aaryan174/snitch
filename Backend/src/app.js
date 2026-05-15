@@ -28,7 +28,7 @@ app.use(passport.initialize());
 passport.use( new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: "/api/auth/google/callback",
+  callbackURL: process.env.NODE_ENV === "production" ? "https://snitchie.onrender.com/api/auth/google/callback" : "/api/auth/google/callback",
   proxy: true
 },
 (accessToken, refreshToken, profile, done)=>{
