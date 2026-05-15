@@ -1,4 +1,5 @@
 import express from "express";
+import path from "path";
 import cookieParser from "cookie-parser";
 import passport from "passport";
 import {Strategy as GoogleStrategy } from "passport-google-oauth20"
@@ -36,17 +37,29 @@ passport.use( new GoogleStrategy({
 
 
 
-app.get("/", (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: "Backend API is running",
-  });
-});
-
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRouter);
 app.use("/api/user", UserRouter);
 app.use("/api/cart", cartRouter);
+
+const __dirname = path.resolve();
+
+if (process.env.NODE_ENV === "production") {
+  // Serve static files from the frontend dist folder
+  app.use(express.static(path.join(__dirname, "../Frontend/dist")));
+
+  // Any unmatched route goes to index.html (React Router)
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "../Frontend/dist/index.html"));
+  });
+} else {
+  app.get("/", (req, res) => {
+    res.status(200).json({
+      success: true,
+      message: "Backend API is running",
+    });
+  });
+}
 
 app.use(notFound);
 app.use(errorHandler);
