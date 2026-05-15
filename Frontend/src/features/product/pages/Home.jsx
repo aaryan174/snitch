@@ -291,7 +291,7 @@ const Home = () => {
                 )}
               </Link>
               {/* User icon / dropdown */}
-              <div className="relative hidden sm:block" ref={userMenuRef}>
+              <div className="relative" ref={userMenuRef}>
                 <button
                   onClick={() => authUser ? setUserMenuOpen(v => !v) : navigate('/login')}
                   className="text-[#888] hover:text-white transition-colors"
